@@ -43,8 +43,7 @@ eval "$(conda shell.bash hook)"
 
 conda activate conda-mmdetection
 
-export PYTHONPATH="$ROOT_DIR:$PYTHONPATH"
-
+export PYTHONPATH="$ROOT_DIR/custom/src:$PYTHONPATH"
 export TMPDIR=$(mktemp -d "${TMPDIR:-/tmp}/mmdetection_${SLURM_JOB_ID}_XXXXXX")
 
 # ----- WANDB -------------------------------------------------------
