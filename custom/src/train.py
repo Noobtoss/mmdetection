@@ -8,8 +8,8 @@ def main():
     ROOT_DIR = "/Users/noobtoss/code_nexus/mmdetection"
 
     OUT_DIR = f"{ROOT_DIR}/runs"
-    CONFIG = f"{ROOT_DIR}/custom/configs/init_config.py"
-    CKPT = f"{ROOT_DIR}/checkpoints/rtmdet_tiny_8xb32-300e_coco_20220902_112414-78e30dcc.pth"
+    CONFIG = f"{ROOT_DIR}/custom/configs/faster-rcnn_init.py"
+    CKPT = f"{ROOT_DIR}/checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth"
 
     cfg = Config.fromfile(CONFIG)
     cfg.work_dir = OUT_DIR
