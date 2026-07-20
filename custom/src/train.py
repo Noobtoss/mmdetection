@@ -4,7 +4,7 @@ from mmengine.runner import Runner
 from mmdet.registry import RUNNERS
 
 def main():
-    ROOT_DIR = "nfs/scratch/staff/schmittth/code_nexus/mmdetection"
+    ROOT_DIR = "/nfs/scratch/staff/schmittth/code_nexus/mmdetection"
     ROOT_DIR = "/Users/noobtoss/code_nexus/mmdetection"
 
     OUT_DIR = f"{ROOT_DIR}/runs"
