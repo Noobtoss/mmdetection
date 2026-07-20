@@ -1,0 +1,3 @@
+# Experiments BMVC2026 - SupConLoss
+exp_name 05BMVC2026_baseline_tmp config custom/configs/init_config.py
+# Experiments End Current
