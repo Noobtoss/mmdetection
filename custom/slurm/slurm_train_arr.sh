@@ -17,8 +17,6 @@ ROOT_DIR=/nfs/scratch/staff/schmittth/code_nexus/mmdetection
 PARAMS_FILE="$ROOT_DIR/custom/slurm/slurm_params.txt"
 PARAMS=$(grep -v '^[[:space:]]*#' "$PARAMS_FILE" | sed -n "$((SLURM_ARRAY_TASK_ID))p")
 
-# Add SLURM_ARRAY_JOB_ID and SLURM_ARRAY_TASK_ID to exp_name
-PARAMS=$(echo "$PARAMS" | sed -E "s/(exp_name[[:space:]]+[^[:space:]]+)/\1_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}/")
 declare -A KV
 read -r -a ARR <<< "$PARAMS"
 for ((i=0; i<${#ARR[@]}; i+=2)); do
@@ -28,12 +26,16 @@ for ((i=0; i<${#ARR[@]}; i+=2)); do
 done
 [[ "$PARAMS" != *"seed"* ]] && PARAMS="$PARAMS seed ${SLURM_ARRAY_JOB_ID}"
 
-echo $KV
+RUN_NAME="${KV[exp_name]:-unnamed_run}"
+RUN_NAME="${RUN_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
+OUT_DIR="${ROOT_DIR}/runs/${RUN_NAME}"
+MODEL_CFG="${KV[model_cfg]}"
+DATA_CFG="${KV[data_cfg]}"
+TRAIN_CFG="${KV[train_cfg]:-custom/configs/runtime.py}"
+CKPT="${KV[ckpt]:-checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth}"
+[[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT_DIR}/${CKPT}"
 
-OUT_DIR="${ROOT_DIR}/runs"
-# EXP_NAME="${KV[exp_name]:-unnamed_experiment}"
-CONFIG="${KV[config]:-custom/configs/init_rtmdet_tiny.py}"
-CKPT="${KV[ckpt]:-checkpoints/rtmdet_tiny_8xb32-300e_coco_20220902_112414-78e30dcc.pth}"
+echo $PARAMS
 
 # ----- ENVIRONMENT SETUP -------------------------------------------
 module purge
@@ -54,14 +56,16 @@ export WANDB_DIR=$TMPDIR
 export WANDB_CONFIG_DIR=$TMPDIR
 
 # ----- TRAINING ----------------------------------------------------
-python tools/train.py $CONFIG \
-    --work-dir $OUT_DIR \
-    --cfg-options \
-        root_dir=$ROOT_DIR \
-        load_from="$ROOT_DIR/$CKPT" \
+python $ROOT_DIR/custom/src/train.py \
+       --run_name $RUN_NAME \
+       --work_dir $OUT_DIR \
+       --model_cfg $MODEL_CFG \
+       --data_cfg $DATA_CFG \
+       --train_cfg $TRAIN_CFG \
+       $PARAMS
 
 # ----- CLEANUP -----------------------------------------------------
-# wandb sync --sync-all || true
-# rm -rf "$TMPDIR"
+wandb sync --sync-all || true
+rm -rf "$TMPDIR"
 # KEEP_FILES=("train_log.txt" "last_epoch_ckpt.pth")
 # eval find "$OUT_DIR/$EXP_NAME" -type f $(printf ' ! -name "%s"' "${KEEP_FILES[@]}") -delete

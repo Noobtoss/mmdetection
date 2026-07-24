@@ -4,7 +4,7 @@ root_dir = '/Users/noobtoss/code_nexus/mmdetection'
 dataset_type = 'CocoDataset'
 data_root = f'{root_dir}/datasets/05ACCV2026Plus'
 
-ann_file_train = f'{data_root}/annotations/annotation_test.json'  # f'{data_root}/annotations/annotation_train.json'
+ann_file_train = f'{data_root}/annotations/annotation_test.json'
 ann_file_val = f'{data_root}/annotations/annotation_test.json'
 ann_file_test = f'{data_root}/annotations/annotation_test.json'
 
