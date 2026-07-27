@@ -67,5 +67,12 @@ python $ROOT_DIR/custom/src/train.py \
 # ----- CLEANUP -----------------------------------------------------
 wandb sync --sync-all || true
 rm -rf "$TMPDIR"
-# KEEP_FILES=("train_log.txt" "last_epoch_ckpt.pth")
-# eval find "$OUT_DIR/$EXP_NAME" -type f $(printf ' ! -name "%s"' "${KEEP_FILES[@]}") -delete
+rm -rf "$OUT_DIR"/*/vis_data
+KEEP_FILES=("last_checkpoint")
+find "$OUT_DIR/$EXP_NAME" -type f \
+  $(printf ' ! -name %s' "${KEEP_FILES[@]}") \
+  ! -name "*.py" \
+  ! -name "epoch_*.pth" \
+  ! -name "best_*.pth" \
+  -delete
+find "$OUT_DIR" -type d -empty -delete
