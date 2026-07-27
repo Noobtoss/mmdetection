@@ -21,6 +21,7 @@ pip install -U openmim
 mim install mmengine==0.8.4
 mim install mmcv==2.0.1
 pip install yapf==0.40.1
+pip install wandb
 ```
 install mmdetection
 ```shell
