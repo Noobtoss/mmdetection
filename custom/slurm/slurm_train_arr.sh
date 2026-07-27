@@ -36,14 +36,12 @@ TRAIN_CFG="${KV[train_cfg]:-custom/configs/runtime.py}"
 CKPT="${KV[ckpt]:-checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth}"
 [[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT_DIR}/${CKPT}"
 
-echo $PARAMS
-
 # ----- ENVIRONMENT SETUP -------------------------------------------
 module purge
 module load python/anaconda3
 module load cuda/cuda-11.8.0
-eval "$(conda shell.bash hook)"
 
+eval "$(conda shell.bash hook)"
 conda activate conda-mmdetection
 
 export PYTHONPATH="$ROOT_DIR/custom/src:$PYTHONPATH"
@@ -65,10 +63,11 @@ python $ROOT_DIR/custom/src/train.py \
        $PARAMS
 
 # ----- CLEANUP -----------------------------------------------------
+KEEP_FILES=("last_checkpoint")
+
 wandb sync --sync-all || true
 rm -rf "$TMPDIR"
 rm -rf "$OUT_DIR"/*/vis_data
-KEEP_FILES=("last_checkpoint")
 find "$OUT_DIR/$EXP_NAME" -type f \
   $(printf ' ! -name %s' "${KEEP_FILES[@]}") \
   ! -name "*.py" \
