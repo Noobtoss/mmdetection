@@ -69,7 +69,7 @@ def update_config(config, opts):
         updates['randomness.seed'] = updates.pop('seed')
         # updates['randomness.deterministic'] = True
         updates['randomness.diff_rank_seed'] = True
-    config.merge_from_dict(updates)
+    config.merge_from_dict(updates, allow_list_keys=True)
     return config
 
 
@@ -84,10 +84,9 @@ def main():
             model_cfg="../configs/models/faster-rcnn_r50_fpn.py",
             data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
             train_cfg="../configs/runtime.py",
-            opts=["seed",
-                  "184181",
-                  "load_from",
-                  "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth"
+            opts=["seed", "184181",
+                  "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
+                  "visualizer.vis_backends.1.init_kwargs.project", "runs"
             ]
         )
     config = build_config(args)
