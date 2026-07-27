@@ -1,6 +1,4 @@
-## Custom Scripts
-
-This folder contains custom shell scripts and Python scripts used for SLURM job management and training.
+## custom
 
 ## Cluster Install Step-by-Step
 setup conda env
@@ -30,6 +28,3 @@ git clone -b v3.1.0 https://github.com/open-mmlab/mmdetection.git
 cd mmdetection
 pip install -v -e .
 ```
-## Additional Resources
-
-- Installation Guide: https://github.com/open-mmlab/mmdetection/discussions/12328
