@@ -1,6 +1,6 @@
 ## custom
 
-## Cluster Install Step-by-Step
+## Setup Step-by-Step
 setup conda env
 ```shell
 conda create -n conda-mmdetection python=3.8 -y
