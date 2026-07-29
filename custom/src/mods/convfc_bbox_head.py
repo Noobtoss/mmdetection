@@ -1,16 +1,24 @@
-from typing import Optional, Tuple, Union
-from torch import Tensor
-
-from mmdet.registry import MODELS
+from typing import List, Optional, Tuple
+import torch
+from mmengine.config import ConfigDict
 from mmengine.logging import MMLogger
+from torch import Tensor
+from mmdet.models.losses import accuracy
+from mmdet.models.task_modules.samplers import SamplingResult
+from mmdet.registry import MODELS
+from mmdet.structures.bbox import get_box_tensor
 from mmdet.models.roi_heads.bbox_heads.convfc_bbox_head import Shared2FCBBoxHead as _Shared2FCBBoxHead
 
+
+# TODO: tmp
+from .cls_feat_loss import FeatLossFactory
 
 @MODELS.register_module(force=True)
 class Shared2FCBBoxHead(_Shared2FCBBoxHead):
 
     def __init__(self, *args, **kwargs):
         MMLogger.get_current_instance().warning('[Modded] Shared2FCBBoxHead')
+        self.cls_feat_loss = FeatLossFactory.get("sup_con_loss")  # TODO: tmp
         super().__init__(*args, **kwargs)
 
     def forward(self, x: Tuple[Tensor]) -> tuple:
@@ -70,3 +78,158 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
         # >>> MOD
         return cls_score, bbox_pred, x_cls
         # <<< MOD
+
+    # >>> MOD
+    def loss_and_target(self,
+                        cls_score: Tensor,
+                        bbox_pred: Tensor,
+                        rois: Tensor,
+                        sampling_results: List[SamplingResult],
+                        rcnn_train_cfg: ConfigDict,
+                        cls_feats: Tensor = None,
+                        concat: bool = True,
+                        reduction_override: Optional[str] = None) -> dict:
+        # <<< MOD
+        """Calculate the loss based on the features extracted by the bbox head.
+
+        Args:
+            cls_score (Tensor): Classification prediction
+                results of all class, has shape
+                (batch_size * num_proposals_single_image, num_classes)
+            bbox_pred (Tensor): Regression prediction results,
+                has shape
+                (batch_size * num_proposals_single_image, 4), the last
+                dimension 4 represents [tl_x, tl_y, br_x, br_y].
+            rois (Tensor): RoIs with the shape
+                (batch_size * num_proposals_single_image, 5) where the first
+                column indicates batch id of each RoI.
+            sampling_results (List[obj:SamplingResult]): Assign results of
+                all images in a batch after sampling.
+            rcnn_train_cfg (obj:ConfigDict): `train_cfg` of RCNN.
+            concat (bool): Whether to concatenate the results of all
+                the images in a single batch. Defaults to True.
+            reduction_override (str, optional): The reduction
+                method used to override the original reduction
+                method of the loss. Options are "none",
+                "mean" and "sum". Defaults to None,
+
+        Returns:
+            dict: A dictionary of loss and targets components.
+                The targets are only used for cascade rcnn.
+        """
+
+        cls_reg_targets = self.get_targets(
+            sampling_results, rcnn_train_cfg, concat=concat)
+        # >>> MOD
+        losses = self.loss(
+            cls_score,
+            bbox_pred,
+            rois,
+            cls_feats=cls_feats,
+            *cls_reg_targets,
+            reduction_override=reduction_override)
+        # <<< MOD
+
+        # cls_reg_targets is only for cascade rcnn
+        return dict(loss_bbox=losses, bbox_targets=cls_reg_targets)
+
+
+    # >>> MOD
+    def loss(self,
+             cls_score: Tensor,
+             bbox_pred: Tensor,
+             rois: Tensor,
+             labels: Tensor,
+             label_weights: Tensor,
+             bbox_targets: Tensor,
+             bbox_weights: Tensor,
+             cls_feats: Tensor = None,
+             reduction_override: Optional[str] = None) -> dict:
+        # <<< MOD
+        """Calculate the loss based on the network predictions and targets.
+
+        Args:
+            cls_score (Tensor): Classification prediction
+                results of all class, has shape
+                (batch_size * num_proposals_single_image, num_classes)
+            bbox_pred (Tensor): Regression prediction results,
+                has shape
+                (batch_size * num_proposals_single_image, 4), the last
+                dimension 4 represents [tl_x, tl_y, br_x, br_y].
+            rois (Tensor): RoIs with the shape
+                (batch_size * num_proposals_single_image, 5) where the first
+                column indicates batch id of each RoI.
+            labels (Tensor): Gt_labels for all proposals in a batch, has
+                shape (batch_size * num_proposals_single_image, ).
+            label_weights (Tensor): Labels_weights for all proposals in a
+                batch, has shape (batch_size * num_proposals_single_image, ).
+            bbox_targets (Tensor): Regression target for all proposals in a
+                batch, has shape (batch_size * num_proposals_single_image, 4),
+                the last dimension 4 represents [tl_x, tl_y, br_x, br_y].
+            bbox_weights (Tensor): Regression weights for all proposals in a
+                batch, has shape (batch_size * num_proposals_single_image, 4).
+            reduction_override (str, optional): The reduction
+                method used to override the original reduction
+                method of the loss. Options are "none",
+                "mean" and "sum". Defaults to None,
+
+        Returns:
+            dict: A dictionary of loss.
+        """
+
+        losses = dict()
+
+        if cls_score is not None:
+            avg_factor = max(torch.sum(label_weights > 0).float().item(), 1.)
+            if cls_score.numel() > 0:
+                loss_cls_ = self.loss_cls(
+                    cls_score,
+                    labels,
+                    label_weights,
+                    avg_factor=avg_factor,
+                    reduction_override=reduction_override)
+                if isinstance(loss_cls_, dict):
+                    losses.update(loss_cls_)
+                else:
+                    losses['loss_cls'] = loss_cls_
+                if self.custom_activation:
+                    acc_ = self.loss_cls.get_accuracy(cls_score, labels)
+                    losses.update(acc_)
+                else:
+                    losses['acc'] = accuracy(cls_score, labels)
+        if bbox_pred is not None:
+            bg_class_ind = self.num_classes
+            # 0~self.num_classes-1 are FG, self.num_classes is BG
+            pos_inds = (labels >= 0) & (labels < bg_class_ind)
+            # do not perform bounding box regression for BG anymore.
+            if pos_inds.any():
+                if self.reg_decoded_bbox:
+                    # When the regression loss (e.g. `IouLoss`,
+                    # `GIouLoss`, `DIouLoss`) is applied directly on
+                    # the decoded bounding boxes, it decodes the
+                    # already encoded coordinates to absolute format.
+                    bbox_pred = self.bbox_coder.decode(rois[:, 1:], bbox_pred)
+                    bbox_pred = get_box_tensor(bbox_pred)
+                if self.reg_class_agnostic:
+                    pos_bbox_pred = bbox_pred.view(
+                        bbox_pred.size(0), -1)[pos_inds.type(torch.bool)]
+                else:
+                    pos_bbox_pred = bbox_pred.view(
+                        bbox_pred.size(0), self.num_classes,
+                        -1)[pos_inds.type(torch.bool),
+                            labels[pos_inds.type(torch.bool)]]
+                losses['loss_bbox'] = self.loss_bbox(
+                    pos_bbox_pred,
+                    bbox_targets[pos_inds.type(torch.bool)],
+                    bbox_weights[pos_inds.type(torch.bool)],
+                    avg_factor=bbox_targets.size(0),
+                    reduction_override=reduction_override)
+            else:
+                losses['loss_bbox'] = bbox_pred[pos_inds].sum()
+        # >>> MOD
+        if cls_feats is not None:
+            # TODO: tmp
+            pass
+        # <<< MOD
+
+        return losses
