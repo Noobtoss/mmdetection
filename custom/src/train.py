@@ -81,7 +81,7 @@ def main():
         args = Namespace(
             run_name="unnamed_run",
             work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
-            model_cfg="../configs/models/faster-rcnn_r50_fpn.py",
+            model_cfg="../configs/models/faster-rcnn_r50_fpn_scl_1_head_m.py",
             data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
             train_cfg="../configs/runtime.py",
             opts=["seed", "184181",
