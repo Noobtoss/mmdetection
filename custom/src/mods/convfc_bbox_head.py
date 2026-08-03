@@ -1,25 +1,24 @@
 from typing import List, Optional, Tuple
 import torch
-from mmengine.config import ConfigDict
-from mmengine.logging import MMLogger
 from torch import Tensor
+from mmengine.logging import MMLogger
+from mmengine.config import ConfigDict
 from mmdet.models.losses import accuracy
 from mmdet.models.task_modules.samplers import SamplingResult
 from mmdet.registry import MODELS
 from mmdet.structures.bbox import get_box_tensor
 from mmdet.models.roi_heads.bbox_heads.convfc_bbox_head import Shared2FCBBoxHead as _Shared2FCBBoxHead
+from mmdet.utils import ConfigType
 
-
-# TODO: tmp
-from .cls_feat_loss import FeatLossFactory
 
 @MODELS.register_module(force=True)
 class Shared2FCBBoxHead(_Shared2FCBBoxHead):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, cls_feat_loss: ConfigType = None, cls_feat_proj_head: ConfigType = None, **kwargs):
         MMLogger.get_current_instance().warning('[Modded] Shared2FCBBoxHead')
-        self.cls_feat_loss = FeatLossFactory.get("sup_con_loss")  # TODO: tmp
         super().__init__(*args, **kwargs)
+        self.cls_feat_loss = MODELS.build(cls_feat_loss) if cls_feat_loss is not None else None
+        self.cls_feat_proj_head = MODELS.build(cls_feat_proj_head) if cls_feat_proj_head is not None else None
 
     def forward(self, x: Tuple[Tensor]) -> tuple:
         """Forward features from the upstream network.
@@ -76,6 +75,8 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
         cls_score = self.fc_cls(x_cls) if self.with_cls else None
         bbox_pred = self.fc_reg(x_reg) if self.with_reg else None
         # >>> MOD
+        if self.cls_feat_proj_head is not None:
+            x_cls = self.cls_feat_proj_head(x_cls)
         return cls_score, bbox_pred, x_cls
         # <<< MOD
 
@@ -197,6 +198,18 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
                     losses.update(acc_)
                 else:
                     losses['acc'] = accuracy(cls_score, labels)
+        # >>> MOD
+        if cls_feats is not None and self.cls_feat_loss is not None:
+            bg_class_ind = self.num_classes
+            # 0~self.num_classes-1 are FG, self.num_classes is BG
+            pos_inds = (labels >= 0) & (labels < bg_class_ind)
+            loss_feats = self.cls_feat_loss(cls_feats=cls_feats[pos_inds],
+                                            target_cls=labels[pos_inds],
+                                            pred_scores=cls_score[pos_inds]
+                                            )
+            losses['loss_cls_feats'] = loss_feats
+            losses['logging_cls_feats'] = self.cls_feat_loss.get_logging()
+        # <<< MOD
         if bbox_pred is not None:
             bg_class_ind = self.num_classes
             # 0~self.num_classes-1 are FG, self.num_classes is BG
@@ -226,10 +239,5 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
                     reduction_override=reduction_override)
             else:
                 losses['loss_bbox'] = bbox_pred[pos_inds].sum()
-        # >>> MOD
-        if cls_feats is not None:
-            # TODO: tmp
-            pass
-        # <<< MOD
 
         return losses

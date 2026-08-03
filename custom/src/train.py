@@ -86,7 +86,8 @@ def main():
             train_cfg="../configs/runtime.py",
             opts=["seed", "184181",
                   "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
-                  "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection"
+                  "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
+                  "model.roi_head.bbox_head.cls_feat_loss.loss_weight", "2",
             ]
         )
     config = build_config(args)
