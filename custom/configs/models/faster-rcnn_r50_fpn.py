@@ -7,9 +7,6 @@ model = dict(
     roi_head=dict(
         bbox_head=dict(
             num_classes=37,  # num_classes)
-            cls_feat_proj_head=dict(
-                type='ClsFeatProjHead', proj_head='s', dim=1024,  # hard encoding bad
-            ),
             cls_feat_loss = dict(
                 type='ClsFeatLoss', loss='sup_con_loss', loss_weight=0  # loss_weight=1
             )
