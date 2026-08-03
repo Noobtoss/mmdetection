@@ -8,7 +8,7 @@ from mmengine.registry import VISBACKENDS
 @VISBACKENDS.register_module(force=True)
 class WandbVisBackend(_WandbVisBackend):
     train_prefix: str = 'train'
-    train_scalars = ['loss', 'lr']  # substrings to match
+    train_scalars = ['loss', 'logging', 'lr']  # substrings to match
 
     def _add_prefix(self, name):
         if any(name == kw or name.startswith(kw + '_') for kw in self.train_scalars):
