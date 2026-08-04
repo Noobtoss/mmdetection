@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=mmdetection_train_arr # Kurzname des Jobs
-#SBATCH --array=1-3%4
+#SBATCH --array=1-5%5
 #SBATCH --output=logs/R_%A_%a.out
 #SBATCH --gres=gpu:a40:1     # Request 1x A40 GPUs
 #SBATCH --partition=a40      # Submit to the a40 node partition
