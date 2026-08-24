@@ -81,13 +81,24 @@ def main():
         args = Namespace(
             run_name="unnamed_run",
             work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
-            model_cfg="../configs/models/faster-rcnn_r50_fpn_scl_1_head_m.py",
             data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
             train_cfg="../configs/runtime.py",
+            model_cfg="../configs/models/faster-rcnn_r50_fpn.py",
             opts=["seed", "184181",
                   "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
                   "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
                   "model.roi_head.bbox_head.cls_feat_loss.loss_weight", "2",
+            ]
+        )
+        args = Namespace(
+            run_name="unnamed_run",
+            work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
+            data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
+            train_cfg="../configs/runtime.py",
+            model_cfg="../configs/models/detr_r50.py",
+            opts=["seed", "184181",
+                  "load_from", "../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
+                  "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
             ]
         )
     config = build_config(args)
