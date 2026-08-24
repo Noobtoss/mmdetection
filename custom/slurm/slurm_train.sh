@@ -1,22 +1,21 @@
 #!/bin/bash
-#SBATCH --job-name=mmdetection_train_arr # Kurzname des Jobs
-#SBATCH --array=1-5%5
+#SBATCH --job-name=mmdetection_train # Kurzname des Jobs
+#SBATCH --array=6%5
 #SBATCH --output=logs/R_%A_%a.out
-#SBATCH --gres=gpu:a40:1     # Request 1x A40 GPUs
-#SBATCH --partition=a40      # Submit to the a40 node partition
-#SBATCH --ntasks=1           # 1 process total (not MPI)
-#SBATCH --ntasks-per-node=1  # That 1 process runs on 1 node
-#SBATCH --cpus-per-task=4    # 4 CPU cores for that process (data loading etc)
-#SBATCH --time=03:32:32      # Walltime limit: kill job after 3hr 32min 32sec
-#SBATCH --mail-type=ALL      # Email on job start, end, fail
-#SBATCH --mail-user=thomas.schmitt@th-nuernberg.de
+#SBATCH --partition=p2,p6             # p4
+#SBATCH --qos=gpuultimate
+#SBATCH --gres=gpu:1
+#SBATCH --nodes=1                  # Anzahl Knoten
+#SBATCH --ntasks=1                 # Gesamtzahl der Tasks über alle Knoten hinweg
+#SBATCH --cpus-per-task=1          # CPU Kerne pro Task (>1 für multi-threaded Tasks)
+#SBATCH --mem-per-cpu=64G          # RAM pro CPU Kern #20G #32G #64G
 
 # ----- DIRS --------------------------------------------------------
-ROOT_DIR="$WORK/code_nexus/mmdetection"
-JOB_DIR=$TMPDIR
+ROOT_DIR=/nfs/scratch/staff/schmittth/code_nexus/mmdetection
+export TMPDIR=$(mktemp -d "${TMPDIR:-/tmp}/mmdetection_${SLURM_JOB_ID}_XXXXXX")
 
 # ----- GET ARGS ----------------------------------------------------
-PARAMS_FILE="$ROOT_DIR/custom/slurm/alex/slurm_params.txt"
+PARAMS_FILE="$ROOT_DIR/custom/slurm/slurm_params.txt"
 PARAMS=$(grep -v '^[[:space:]]*#' "$PARAMS_FILE" | sed -n "$((SLURM_ARRAY_TASK_ID))p")
 
 declare -A KV
@@ -38,20 +37,14 @@ CKPT="${KV[ckpt]:-checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_11082
 [[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT_DIR}/${CKPT}"
 
 # ----- ENVIRONMENT SETUP -------------------------------------------
-unset SLURM_EXPORT_ENV
-
 module purge
-module load python/3.12-base
-module load cuda/12.8.1
+module load python/anaconda3
+module load cuda/cuda-11.8.0
 
 eval "$(conda shell.bash hook)"
 conda activate conda-mmdetection
 
 export PYTHONPATH="$ROOT_DIR/custom/src:$PYTHONPATH"
-
-# --- PROXY  --------------------------------------------------------
-export http_proxy=http://proxy:80
-export https_proxy=http://proxy:80
 
 # ----- WANDB -------------------------------------------------------
 export WANDB_API_KEY=95177947f5f36556806da90ea7a0bf93ed857d58

@@ -26,10 +26,10 @@ def parse_experiments(text, task_ids):
     return experiments
 
 if __name__ == "__main__":
-    array_str = "1-5%4"
+    array_str = "6%1"
     task_ids  = parse_array_ids(array_str)
 
-    with open("alex/slurm_params.txt", "r") as f:
+    with open("slurm_params.txt", "r") as f:
         text = f.read()
 
     exp_names = parse_experiments(text, task_ids)

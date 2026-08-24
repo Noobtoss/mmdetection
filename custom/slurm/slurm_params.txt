@@ -1,7 +1,9 @@
-# Experiments BMVC2026 - SupConLoss
+# Experiments Faster-RCNN
 exp_name ACCV2026Plus                model_cfg custom/configs/models/faster-rcnn_r50_fpn.py                data_cfg custom/configs/datasets/05ACCV2026Plus.py
 exp_name ACCV2026Plus_scl_01         model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_01.py         data_cfg custom/configs/datasets/05ACCV2026Plus.py
 exp_name ACCV2026Plus_scl_005_head_m model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_005_head_m.py data_cfg custom/configs/datasets/05ACCV2026Plus.py
 exp_name ACCV2026Plus_scl_01_head_m  model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_01_head_m.py  data_cfg custom/configs/datasets/05ACCV2026Plus.py
 exp_name ACCV2026Plus_scl_02_head_m  model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_02_head_m.py  data_cfg custom/configs/datasets/05ACCV2026Plus.py
+# Experiments DETR
+exp_name ACCV2026Plus                model_cfg custom/configs/models/detr_r50.py                           data_cfg custom/configs/datasets/05ACCV2026Plus.py
 # Experiments End Current
