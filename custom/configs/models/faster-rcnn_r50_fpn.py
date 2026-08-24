@@ -5,6 +5,7 @@ load_from = '../../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_1
 
 model = dict(
     roi_head=dict(
+        type="StandardRoIHead",
         bbox_head=dict(
             num_classes=37,  # num_classes)
             cls_feat_loss = dict(
