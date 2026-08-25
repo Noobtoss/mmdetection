@@ -177,9 +177,9 @@ class DETRHead(_DETRHead):
         loss_dict['loss_cls'] = losses_cls[-1]
         loss_dict['loss_bbox'] = losses_bbox[-1]
         loss_dict['loss_iou'] = losses_iou[-1]
-        loss_dict['loss_cls_feats'] = losses_feats[-1]
-        # assumes that loss last decoder layer is commuted last
-        loss_dict['logging_cls_feats'] = self.cls_feat_loss.get_logging()
+        if self.cls_feat_loss is not None:
+            loss_dict['loss_cls_feats'] = losses_feats[-1]
+            loss_dict['logging_cls_feats'] = self.cls_feat_loss.get_logging()
         # loss from other decoder layers
         num_dec_layer = 0
         for loss_cls_i, loss_bbox_i, loss_iou_i, loss_feat_i in \
@@ -187,7 +187,8 @@ class DETRHead(_DETRHead):
             loss_dict[f'd{num_dec_layer}.loss_cls'] = loss_cls_i
             loss_dict[f'd{num_dec_layer}.loss_bbox'] = loss_bbox_i
             loss_dict[f'd{num_dec_layer}.loss_iou'] = loss_iou_i
-            loss_dict[f'd{num_dec_layer}.loss_cls_feats'] = loss_feat_i
+            if self.cls_feat_loss is not None:
+                loss_dict[f'd{num_dec_layer}.loss_cls_feats'] = loss_feat_i
             num_dec_layer += 1
         # <<< MOD
         return loss_dict
