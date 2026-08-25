@@ -33,8 +33,10 @@ OUT_DIR="${ROOT_DIR}/runs/${RUN_NAME}"
 MODEL_CFG="${KV[model_cfg]}"
 DATA_CFG="${KV[data_cfg]}"
 TRAIN_CFG="${KV[train_cfg]:-custom/configs/runtime.py}"
-CKPT="${KV[ckpt]:-checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth}"
-[[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT_DIR}/${CKPT}"
+if [[ -n "${KV[ckpt]}" ]]; then
+    CKPT="${KV[ckpt]}"
+    [[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT_DIR}/${CKPT}"
+fi
 
 # ----- ENVIRONMENT SETUP -------------------------------------------
 module purge

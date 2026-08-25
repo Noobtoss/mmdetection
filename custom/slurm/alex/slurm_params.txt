@@ -1,7 +1,11 @@
-# Experiments BMVC2026 - SupConLoss
-exp_name ACCV2026Plus                model_cfg custom/configs/models/faster-rcnn_r50_fpn.py                data_cfg custom/configs/datasets/05ACCV2026Plus_alex.py
-exp_name ACCV2026Plus_scl_01         model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_01.py         data_cfg custom/configs/datasets/05ACCV2026Plus_alex.py
-exp_name ACCV2026Plus_scl_005_head_m model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_005_head_m.py data_cfg custom/configs/datasets/05ACCV2026Plus_alex.py
-exp_name ACCV2026Plus_scl_01_head_m  model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_01_head_m.py  data_cfg custom/configs/datasets/05ACCV2026Plus_alex.py
-exp_name ACCV2026Plus_scl_02_head_m  model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_02_head_m.py  data_cfg custom/configs/datasets/05ACCV2026Plus_alex.py
+# Experiments Faster-RCNN
+exp_name ACCV2026Plus                model_cfg custom/configs/models/faster-rcnn_r50_fpn.py                data_cfg custom/configs/datasets/05ACCV2026Plus.py ckpt checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth
+exp_name ACCV2026Plus_scl_01         model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_01.py         data_cfg custom/configs/datasets/05ACCV2026Plus.py ckpt checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth
+exp_name ACCV2026Plus_scl_005_head_m model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_005_head_m.py data_cfg custom/configs/datasets/05ACCV2026Plus.py ckpt checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth
+exp_name ACCV2026Plus_scl_01_head_m  model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_01_head_m.py  data_cfg custom/configs/datasets/05ACCV2026Plus.py ckpt checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth
+exp_name ACCV2026Plus_scl_02_head_m  model_cfg custom/configs/models/faster-rcnn_r50_fpn_scl_02_head_m.py  data_cfg custom/configs/datasets/05ACCV2026Plus.py ckpt checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth
+# Experiments DETR
+exp_name ACCV2026Plus                model_cfg custom/configs/models/detr_r50.py                           data_cfg custom/configs/datasets/05ACCV2026Plus.py ckpt checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth
+exp_name ACCV2026Plus_scl_01         model_cfg custom/configs/models/detr_r50_scl_01.py                    data_cfg custom/configs/datasets/05ACCV2026Plus.py ckpt checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth
+exp_name ACCV2026Plus_scl_01_head_m  model_cfg custom/configs/models/detr_r50_scl_01_head_m.py             data_cfg custom/configs/datasets/05ACCV2026Plus.py ckpt checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth
 # Experiments End Current
