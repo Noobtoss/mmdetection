@@ -78,7 +78,7 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
         if self.cls_feat_proj_head is not None:
             x_cls = self.cls_feat_proj_head(x_cls)
         return cls_score, bbox_pred, x_cls
-        # <<< MOD
+    # <<< MOD
 
     # >>> MOD
     def loss_and_target(self,
