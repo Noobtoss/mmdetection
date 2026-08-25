@@ -285,3 +285,11 @@ class DETRHead(_DETRHead):
         # >>> MOD
         return loss_cls, loss_bbox, loss_iou, loss_feats
     # <<< MOD
+
+    def predict_by_feat(self,
+                        layer_cls_scores: Tensor,
+                        layer_bbox_preds: Tensor,
+                        layer_cls_feats: Tensor,
+                        batch_img_metas: List[dict],
+                        rescale: bool = True) -> InstanceList:
+        return super().predict_by_feat(layer_cls_scores, layer_bbox_preds, batch_img_metas, rescale)
