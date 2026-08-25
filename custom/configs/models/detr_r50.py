@@ -1,6 +1,7 @@
 _base_ = '../../../configs/detr/detr_r50_8xb2-150e_coco.py'
 
 # num_classes = 37   # hard encoding bad
+# load_from = '/nfs/scratch/staff/schmittth/code_nexus/mmdetection/checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth'
 load_from = '../../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth'
 
 model = dict(
