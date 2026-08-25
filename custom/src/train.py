@@ -7,6 +7,43 @@ from mmdet.registry import RUNNERS
 from mmengine.config import Config
 from mmengine.runner import Runner
 
+DEFAULT_ARGS = {
+    "faster-rcnn": Namespace(
+        run_name="unnamed_run",
+        work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
+        data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
+        train_cfg="../configs/runtime.py",
+        model_cfg="../configs/models/faster-rcnn_r50_fpn.py",
+        opts=["seed", "184181",
+              "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
+              "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
+              "model.roi_head.bbox_head.cls_feat_loss.loss_weight", "2",
+              ]
+    ),
+    "detr": Namespace(
+        run_name="unnamed_run",
+        work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
+        data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
+        train_cfg="../configs/runtime.py",
+        model_cfg="../configs/models/detr_r50.py",
+        opts=["seed", "184181",
+              "load_from", "../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
+              "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
+              ]
+    ),
+    "dino": Namespace(
+        run_name="unnamed_run",
+        work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
+        data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
+        train_cfg="../configs/runtime.py",
+        model_cfg="../configs/models/dino-5scale_swin-l.py",
+        opts=["seed", "184181",
+              "load_from", "../../checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth",
+              "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
+              ]
+    ),
+}
+
 
 def train(config):
     if 'runner_type' not in config:
@@ -35,9 +72,9 @@ def parse_args():
 def build_config(args):
     config = Config({})
     config_files = [
-            args.model_cfg,
-            args.data_cfg,
-            args.train_cfg,
+        args.model_cfg,
+        args.data_cfg,
+        args.train_cfg,
     ]
     for config_file in config_files:
         if config_file is None:
@@ -78,29 +115,10 @@ def main():
         args = parse_args()
     else:
         warnings.warn("⚠️ Running with hardcoded test args")
-        args = Namespace(
-            run_name="unnamed_run",
-            work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
-            data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
-            train_cfg="../configs/runtime.py",
-            model_cfg="../configs/models/faster-rcnn_r50_fpn.py",
-            opts=["seed", "184181",
-                  "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
-                  "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
-                  "model.roi_head.bbox_head.cls_feat_loss.loss_weight", "2",
-            ]
-        )
-        args = Namespace(
-            run_name="unnamed_run",
-            work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
-            data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
-            train_cfg="../configs/runtime.py",
-            model_cfg="../configs/models/detr_r50.py",
-            opts=["seed", "184181",
-                  "load_from", "../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
-                  "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
-            ]
-        )
+        args = DEFAULT_ARGS["faster-rcnn"]
+        args = DEFAULT_ARGS["detr"]
+        args = DEFAULT_ARGS["dino"]
+
     config = build_config(args)
     config = update_config(config, args.opts)
     train(config)
