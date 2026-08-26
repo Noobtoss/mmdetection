@@ -2,7 +2,7 @@ _base_ = '../../../configs/dino/dino-5scale_swin-l_8xb2-36e_coco.py'
 
 # train ----------------------------------------------------------------------------------------------------------------
 
-max_epochs = 100
+max_epochs = 50
 train_cfg = dict(
     type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval=1)
 
@@ -15,7 +15,7 @@ param_scheduler = [
         begin=0,
         end=max_epochs,
         by_epoch=True,
-        milestones=[70,90],
+        milestones=[30,40],
         gamma=0.1)
 ]
 
