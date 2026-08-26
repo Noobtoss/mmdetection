@@ -12,8 +12,8 @@ DEFAULT_ARGS = {
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
         data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
-        train_cfg="../configs/runtime.py",
         model_cfg="../configs/models/faster-rcnn_r50_fpn.py",
+        mods_cfg="../configs/mods.py",
         opts=["seed", "184181",
               "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
               "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
@@ -24,8 +24,8 @@ DEFAULT_ARGS = {
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
         data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
-        train_cfg="../configs/runtime.py",
         model_cfg="../configs/models/detr_r50.py",
+        mods_cfg="../configs/mods.py",
         opts=["seed", "184181",
               "load_from", "../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
               "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
@@ -35,8 +35,8 @@ DEFAULT_ARGS = {
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
         data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
-        train_cfg="../configs/runtime.py",
         model_cfg="../configs/models/dino-5scale_swin-l.py",
+        mods_cfg="../configs/mods.py",
         opts=["seed", "184181",
               "load_from", "../../checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth",
               "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
@@ -59,7 +59,7 @@ def parse_args():
     parser.add_argument("--work_dir", type=str, help="work_dir")
     parser.add_argument("--model_cfg", type=str, default=None)
     parser.add_argument("--data_cfg", type=str, default=None)
-    parser.add_argument("--train_cfg", type=str, default='../configs/runtime.py')
+    parser.add_argument("--mods_cfg", type=str, default='../configs/mods.py')
     parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
@@ -74,7 +74,7 @@ def build_config(args):
     config_files = [
         args.model_cfg,
         args.data_cfg,
-        args.train_cfg,
+        args.mods_cfg,
     ]
     for config_file in config_files:
         if config_file is None:

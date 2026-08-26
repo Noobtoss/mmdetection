@@ -33,7 +33,7 @@ RUN_NAME="${RUN_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 OUT_DIR="${ROOT_DIR}/runs/${RUN_NAME}"
 MODEL_CFG="${KV[model_cfg]}"
 DATA_CFG="${KV[data_cfg]}"
-TRAIN_CFG="${KV[train_cfg]:-custom/configs/runtime.py}"
+MODS_CFG="${KV[train_cfg]:-custom/configs/mods.py}"
 if [[ -n "${KV[ckpt]}" ]]; then
     CKPT="${KV[ckpt]}"
     [[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT_DIR}/${CKPT}"
@@ -68,7 +68,7 @@ python $ROOT_DIR/custom/src/train.py \
        --work_dir $OUT_DIR \
        --model_cfg $MODEL_CFG \
        --data_cfg $DATA_CFG \
-       --train_cfg $TRAIN_CFG \
+       --mods_cfg $MODS_CFG \
        $PARAMS
 
 # ----- CLEANUP -----------------------------------------------------
