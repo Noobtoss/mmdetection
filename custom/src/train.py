@@ -31,6 +31,17 @@ DEFAULT_ARGS = {
               "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
               ]
     ),
+    "def-detr": Namespace(
+        run_name="unnamed_run",
+        work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
+        data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
+        model_cfg="../configs/models/deformable-detr-refine-twostage_r50.py",
+        mods_cfg="../configs/mods.py",
+        opts=["seed", "184181",
+              "load_from", "../../checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth",
+              "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
+              ]
+    ),
     "dino": Namespace(
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
@@ -117,6 +128,7 @@ def main():
         warnings.warn("⚠️ Running with hardcoded test args")
         args = DEFAULT_ARGS["faster-rcnn"]
         args = DEFAULT_ARGS["detr"]
+        args = DEFAULT_ARGS["def-detr"]
         args = DEFAULT_ARGS["dino"]
 
     config = build_config(args)
