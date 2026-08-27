@@ -75,8 +75,6 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
         cls_score = self.fc_cls(x_cls) if self.with_cls else None
         bbox_pred = self.fc_reg(x_reg) if self.with_reg else None
         # >>> MOD
-        if self.cls_feat_proj_head is not None:
-            x_cls = self.cls_feat_proj_head(x_cls)
         return cls_score, bbox_pred, x_cls
     # <<< MOD
 
@@ -203,7 +201,10 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
             bg_class_ind = self.num_classes
             # 0~self.num_classes-1 are FG, self.num_classes is BG
             pos_inds = (labels >= 0) & (labels < bg_class_ind)
-            loss_feats = self.cls_feat_loss(cls_feats=cls_feats[pos_inds],
+            cls_feats = cls_feats[pos_inds]
+            if self.cls_feat_proj_head is not None:
+                cls_feats = self.cls_feat_proj_head(cls_feats)
+            loss_feats = self.cls_feat_loss(cls_feats=cls_feats,
                                             target_cls=labels[pos_inds],
                                             pred_scores=cls_score[pos_inds]
                                             )
