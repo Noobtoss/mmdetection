@@ -239,7 +239,11 @@ class DINOHead(_DINOHead):
             dn_cls_feats = dn_cls_feats.reshape(-1, dn_cls_feats.shape[-1])
             bg_class_ind = self.num_classes
             pos_inds = (labels >= 0) & (labels < bg_class_ind)
-            loss_feats = self.cls_feat_loss(cls_feats=dn_cls_feats[pos_inds],
+            # Use a shared projection head for all decoder layers.
+            dn_cls_feats = dn_cls_feats[pos_inds]
+            if self.cls_feat_proj_head is not None:
+                dn_cls_feats = self.cls_feat_proj_head(dn_cls_feats)
+            loss_feats = self.cls_feat_loss(cls_feats=dn_cls_feats,
                                             target_cls=labels[pos_inds],
                                             pred_scores=cls_scores[pos_inds]
                                             )

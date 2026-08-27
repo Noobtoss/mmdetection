@@ -117,8 +117,6 @@ class DETRHead(_DETRHead):
             self.activate(self.reg_ffn(hidden_states))).sigmoid()
         # >>> MOD
         layers_cls_feats = hidden_states
-        if self.cls_feat_proj_head is not None:
-            layers_cls_feats = self.cls_feat_proj_head(layers_cls_feats)
         return layers_cls_scores, layers_bbox_preds, layers_cls_feats
     # <<< MOD
 
@@ -253,7 +251,11 @@ class DETRHead(_DETRHead):
             cls_feats = cls_feats.reshape(-1, cls_feats.shape[-1])
             bg_class_ind = self.num_classes
             pos_inds = (labels >= 0) & (labels < bg_class_ind)
-            loss_feats = self.cls_feat_loss(cls_feats=cls_feats[pos_inds],
+            # Use a shared projection head for all decoder layers.
+            cls_feats = cls_feats[pos_inds]
+            if self.cls_feat_proj_head is not None:
+                cls_feats = self.cls_feat_proj_head(cls_feats)
+            loss_feats = self.cls_feat_loss(cls_feats=cls_feats,
                                             target_cls=labels[pos_inds],
                                             pred_scores=cls_scores[pos_inds]
                                             )

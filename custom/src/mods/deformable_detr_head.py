@@ -81,8 +81,6 @@ class DeformableDETRHead(_DeformableDETRHead):
 
         # >>> MOD
         all_layers_cls_feats = hidden_states
-        if self.cls_feat_proj_head is not None:
-            all_layers_cls_feats = self.cls_feat_proj_head(all_layers_cls_feats)
         return all_layers_outputs_classes, all_layers_outputs_coords, all_layers_cls_feats
     # <<< MOD
 
