@@ -8,7 +8,7 @@ from .cls_feat_proj_head import ClsFeatProjHead
 
 @MODELS.register_module()
 class ClsFeatLoss(_ClsFeatLoss):
-    def __init__(self, *args, loss_weight: float = 1, log_window_size: int = 10, **kwargs) -> None:
+    def __init__(self, *args, loss_weight: float = 1, log_window_size: int = 20, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.loss_weight = loss_weight
         self.logging_cache = None
