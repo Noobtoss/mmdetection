@@ -3,17 +3,13 @@ from typing import Dict, List, Tuple
 import torch
 from torch import Tensor
 from mmengine.logging import MMLogger
-from mmdet.utils import ConfigType
 from mmdet.registry import MODELS
 from mmdet.utils import InstanceList, OptInstanceList
-from mmdet.models.utils import multi_apply
 from mmdet.models.layers import inverse_sigmoid
 from mmdet.models.dense_heads.deformable_detr_head import DeformableDETRHead as _DeformableDETRHead
 
-# TODO: tmp
-# from mmdet.models.dense_heads.detr_head import DETRHead
-
 from .detr_head import DETRHead
+
 
 _DeformableDETRHead.__bases__ = (DETRHead,)
 
@@ -23,13 +19,9 @@ class DeformableDETRHead(_DeformableDETRHead):
 
     def __init__(self,
                  *args,
-                 cls_feat_loss: ConfigType = None,
-                 cls_feat_proj_head: ConfigType = None,
                  **kwargs) -> None:
         MMLogger.get_current_instance().warning('[Modded] DeformableDETRHead')
         super().__init__(*args, **kwargs)
-        self.cls_feat_loss = MODELS.build(cls_feat_loss) if cls_feat_loss is not None else None
-        self.cls_feat_proj_head = MODELS.build(cls_feat_proj_head) if cls_feat_proj_head is not None else None
 
     def forward(self, hidden_states: Tensor,
                 references: List[Tensor]) -> Tuple[Tensor]:
