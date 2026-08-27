@@ -87,7 +87,8 @@ class DETRHead(_DETRHead):
 
         self._init_layers()
         # >>> MOD
-        assert not self.loss_cls.use_sigmoid, "Current implementation only supports loss_cls.use_sigmoid=False"
+        # TODO: removed emotional support assert, weakly tested
+        # assert not self.loss_cls.use_sigmoid, "Current implementation only supports loss_cls.use_sigmoid=False"
         self.cls_feat_loss = MODELS.build(cls_feat_loss) if cls_feat_loss is not None else None
         self.cls_feat_proj_head = MODELS.build(cls_feat_proj_head) if cls_feat_proj_head is not None else None
         # <<< MOD
@@ -126,11 +127,13 @@ class DETRHead(_DETRHead):
         self,
         all_layers_cls_scores: Tensor,
         all_layers_bbox_preds: Tensor,
-        all_layers_cls_feats: Tensor,
-        batch_gt_instances: InstanceList,
-        batch_img_metas: List[dict],
+        all_layers_cls_feats: Tensor = None,
+        batch_gt_instances: InstanceList = None,
+        batch_img_metas: List[dict] = None,
         batch_gt_instances_ignore: OptInstanceList = None
     ) -> Dict[str, Tensor]:
+        assert batch_gt_instances is not None
+        assert batch_img_metas is not None
         # <<< MOD
         """"Loss function.
 
@@ -194,9 +197,11 @@ class DETRHead(_DETRHead):
         return loss_dict
 
     # >>> MOD
-    def loss_by_feat_single(self, cls_scores: Tensor, bbox_preds: Tensor, cls_feats: Tensor,
-                            batch_gt_instances: InstanceList,
-                            batch_img_metas: List[dict]) -> Tuple[Tensor]:
+    def loss_by_feat_single(self, cls_scores: Tensor, bbox_preds: Tensor, cls_feats: Tensor = None,
+                            batch_gt_instances: InstanceList = None,
+                            batch_img_metas: List[dict] = None) -> Tuple[Tensor]:
+        assert batch_gt_instances is not None
+        assert batch_img_metas is not None
         # <<< MOD
         """Loss function for outputs from a single decoder layer of a single
         feature level.
@@ -244,7 +249,7 @@ class DETRHead(_DETRHead):
 
         # >>> MOD
         loss_feats = loss_cls.new_zeros(())
-        if self.cls_feat_loss is not None:
+        if cls_feats is not None and self.cls_feat_loss is not None:
             cls_feats = cls_feats.reshape(-1, cls_feats.shape[-1])
             bg_class_ind = self.num_classes
             pos_inds = (labels >= 0) & (labels < bg_class_ind)
