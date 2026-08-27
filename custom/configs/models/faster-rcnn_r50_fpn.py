@@ -46,5 +46,5 @@ model = dict(
 )
 
 train_dataloader = dict(
-    batch_size = 4 # 2
+    batch_size = 2 # 4
 )
