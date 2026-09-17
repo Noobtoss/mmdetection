@@ -255,10 +255,7 @@ class DETRHead(_DETRHead):
             cls_feats = cls_feats[pos_inds]
             if self.cls_feat_proj_head is not None:
                 cls_feats = self.cls_feat_proj_head(cls_feats)
-            loss_feats = self.cls_feat_loss(cls_feats=cls_feats,
-                                            target_cls=labels[pos_inds],
-                                            pred_scores=cls_scores[pos_inds]
-                                            )
+            loss_feats = self.cls_feat_loss(cls_feats=cls_feats, target_cls=labels[pos_inds])
         # <<< MOD
 
         # Compute the average number of gt boxes across all gpus, for

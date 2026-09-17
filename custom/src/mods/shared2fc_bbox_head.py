@@ -205,9 +205,7 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
             if self.cls_feat_proj_head is not None:
                 cls_feats = self.cls_feat_proj_head(cls_feats)
             loss_feats = self.cls_feat_loss(cls_feats=cls_feats,
-                                            target_cls=labels[pos_inds],
-                                            pred_scores=cls_score[pos_inds]
-                                            )
+                                            target_cls=labels[pos_inds])
             losses['loss_cls_feats'] = loss_feats
             losses['logging_cls_feats'] = self.cls_feat_loss.get_logging()
         # <<< MOD
