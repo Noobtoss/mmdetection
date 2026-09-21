@@ -8,7 +8,7 @@ from mmdet.registry import RUNNERS
 from mmengine.config import Config
 from mmengine.runner import Runner
 
-from .debug_modes import enable_nan_debug
+from debug_modes import enable_nan_debug
 
 DEFAULT_ARGS = {
     "faster-rcnn": Namespace(
