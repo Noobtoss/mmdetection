@@ -1,10 +1,28 @@
 from collections import deque
+from typing import Optional
+
 import torch
 from mmdet.registry import MODELS
+from mmdet.utils import ConfigType
+from mmengine.config import ConfigDict
 
+from .class_losses_weighted import ClassLossWeighted as _ClassLossWeighted
+from .class_weights import class_weights as _class_weights
 from .cls_feat_loss import ClsFeatLoss as _ClsFeatLoss
 from .cls_feat_proj_head import ClsFeatProjHead
 
+
+@MODELS.register_module()
+class ClassLossWeighted(_ClassLossWeighted):
+    def __init__(self,
+                 loss: ConfigType = dict(type='CrossEntropyLoss', use_sigmoid=False),
+                 class_weights: Optional[str] = None,
+                 *args, **kwargs,
+                 ) -> None:
+        if isinstance(loss, (dict, ConfigDict)):
+            loss = MODELS.build(loss)
+        loss.reduction = "none"  # class weighting requires unreduced intermediate values
+        super().__init__(loss=loss, **_class_weights[class_weights])
 
 @MODELS.register_module()
 class ClsFeatLoss(_ClsFeatLoss):

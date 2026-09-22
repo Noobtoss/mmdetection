@@ -8,4 +8,4 @@ from .detr_head import DETRHead
 from .deformable_detr_head import DeformableDETRHead
 from .dino_head import DINOHead
 # mods training loss
-from .mmdet_register_module import ClsFeatLoss, ClsFeatProjHead
+from .mmdet_register_module import ClassLossWeighted, ClsFeatLoss, ClsFeatProjHead

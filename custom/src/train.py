@@ -15,7 +15,7 @@ DEFAULT_ARGS = {
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
         data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
-        model_cfg="../configs/models/faster-rcnn_r50_fpn_scl_01_head_m.py",
+        model_cfg="../configs/models/faster-rcnn_r50_fpn_class_weights.py",
         mods_cfg="../configs/mods.py",
         opts=["seed", "184181",
               "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
@@ -130,9 +130,9 @@ def main():
     else:
         warnings.warn("⚠️ Running with hardcoded test args")
         args = DEFAULT_ARGS["faster-rcnn"]
-        args = DEFAULT_ARGS["detr"]
-        args = DEFAULT_ARGS["def-detr"]
-        args = DEFAULT_ARGS["dino"]
+        # args = DEFAULT_ARGS["detr"]
+        # args = DEFAULT_ARGS["def-detr"]
+        # args = DEFAULT_ARGS["dino"]
 
     config = build_config(args)
     config = update_config(config, args.opts)
