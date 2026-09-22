@@ -2,7 +2,7 @@
 #SBATCH --job-name=mmdetection_train # Kurzname des Jobs
 #SBATCH --array=1,4,6,7,8,9,10,11%3
 #SBATCH --output=logs/R_%A_%a.out
-#SBATCH --partition=p2,p6             # p4
+#SBATCH --partition=p6             # p4
 #SBATCH --qos=gpuultimate
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1                  # Anzahl Knoten
@@ -67,7 +67,12 @@ python $ROOT_DIR/custom/src/train.py \
 # ----- CLEANUP -----------------------------------------------------
 KEEP_FILES=("last_checkpoint")
 
-wandb sync --sync-all || true
+for i in 1 2 3 4 5; do
+    wandb sync --sync-all && break
+    echo "sync attempt $i failed, retrying..."
+    sleep 20
+done
+
 rm -rf "$TMPDIR"
 rm -rf "$OUT_DIR"/*/vis_data
 find "$OUT_DIR/$EXP_NAME" -type f \

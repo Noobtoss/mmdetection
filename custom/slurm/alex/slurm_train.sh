@@ -74,7 +74,12 @@ python $ROOT_DIR/custom/src/train.py \
 # ----- CLEANUP -----------------------------------------------------
 KEEP_FILES=("last_checkpoint")
 
-wandb sync --sync-all || true
+for i in 1 2 3 4 5; do
+    wandb sync --sync-all && break
+    echo "sync attempt $i failed, retrying..."
+    sleep 20
+done
+
 rm -rf "$TMPDIR"
 rm -rf "$OUT_DIR"/*/vis_data
 find "$OUT_DIR/$EXP_NAME" -type f \
