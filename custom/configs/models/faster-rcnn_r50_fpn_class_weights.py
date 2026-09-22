@@ -9,7 +9,6 @@ model = dict(
                 loss_weight=0.1
             ),
             loss_cls = dict(
-                # _delete_=True,
                 type='ClassLossWeighted',
                 loss=dict(
                     type='CrossEntropyLoss',
