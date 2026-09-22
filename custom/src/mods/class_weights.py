@@ -6,7 +6,7 @@ dtype=torch.float32
 ).view(1, 1, -1)
 CLASS_SIM = CLASS_SIM / CLASS_SIM[CLASS_SIM >= 0].mean()
 CLASS_SIM[CLASS_SIM <= 0] = 1  # -1.0 = classes only in dataset.categories -> weight=1 (trains as negative, weight=0 wouldn't)
-CLASS_SIM = torch.cat([CLASS_SIM, torch.ones(1, 1, 1)], dim=-1)  # bg label (num_classes) -> weight 1.0
+CLASS_SIM_RCNN = torch.cat([CLASS_SIM, torch.ones(1, 1, 1)], dim=-1)  # bg label (num_classes) -> weight 1.0, RCNN/softmax only
 
 CLASS_SIM_MATRIX = torch.tensor(
 [
@@ -53,8 +53,8 @@ dtype=torch.float32
 CLASS_SIM_MATRIX = CLASS_SIM_MATRIX / CLASS_SIM_MATRIX[CLASS_SIM_MATRIX >= 0].mean()
 CLASS_SIM_MATRIX[CLASS_SIM_MATRIX <= 0] = 1  # -1.0 = classes only in dataset.categories -> weight=1 (trains as negative, weight=0 wouldn't)
 n_cls = CLASS_SIM_MATRIX.shape[0]
-CLASS_SIM_MATRIX = torch.cat([CLASS_SIM_MATRIX, torch.ones(n_cls, 1)], dim=1)  # bg column
-CLASS_SIM_MATRIX = torch.cat([CLASS_SIM_MATRIX, torch.ones(1, n_cls + 1)], dim=0)  # bg row
+CLASS_SIM_MATRIX_RCNN = torch.cat([CLASS_SIM_MATRIX, torch.ones(n_cls, 1)], dim=1)  # bg column
+CLASS_SIM_MATRIX_RCNN = torch.cat([CLASS_SIM_MATRIX_RCNN, torch.ones(1, n_cls + 1)], dim=0)  # bg row
 
 class_weights = {
     None:
@@ -71,5 +71,15 @@ class_weights = {
         {
             "class_weights": None,
             "class_weights_matrix": CLASS_SIM_MATRIX,
+        },
+    "class_sim_rcnn":
+        {
+            "class_weights": CLASS_SIM_RCNN,
+            "class_weights_matrix": None,
+        },
+    "class_sim_matrix_rcnn":
+        {
+            "class_weights": None,
+            "class_weights_matrix": CLASS_SIM_MATRIX_RCNN,
         },
 }
