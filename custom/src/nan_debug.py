@@ -42,7 +42,7 @@ def _resolve_interval(interval):
     return _EVERY_N_ITERS_AFTER
 
 
-def enable_nan_debug(config, interval=None, dense_iters=None):
+def nan_debug(config, interval=None, dense_iters=None):
     default_interval = _resolve_interval(interval)
     default_dense_iters = _EVERY_FIRST_ITERS if dense_iters is None else max(0, int(dense_iters))
 
@@ -51,8 +51,10 @@ def enable_nan_debug(config, interval=None, dense_iters=None):
     @HOOKS.register_module(force=True)
     class FirstNonFiniteHook(Hook):
         def __init__(self, interval=default_interval, dense_iters=default_dense_iters):
+            super().__init__()
             self.interval = max(1, int(interval))
             self.dense_iters = max(0, int(dense_iters))
+            self.step = 0
 
         def _check(self, runner, kind, name, tensor):
             if not torch.is_tensor(tensor) or not tensor.is_floating_point():
@@ -60,7 +62,9 @@ def enable_nan_debug(config, interval=None, dense_iters=None):
             if not tensor.numel() or torch.isfinite(tensor).all():
                 return
 
-            msg = f"[NaN] first non-finite {kind}: {name} (iter {runner.iter})"
+            sampled = self.step > self.dense_iters and self.interval > 1
+            lag = "" if not sampled else f" (may be up to {self.interval - 1} iters late)"
+            msg = f"[NaN] non-finite {kind}: {name} (checked at iter {self.step}){lag}"
             runner.logger.error(msg)
             print(msg, flush=True)
             raise RuntimeError(msg)
@@ -98,7 +102,11 @@ def enable_nan_debug(config, interval=None, dense_iters=None):
                         self._check(runner, "optimizer_state", f"{param_name}.{state_key}", state_value)
 
         def after_train_iter(self, runner, batch_idx, data_batch=None, outputs=None):
-            step = runner.iter if runner.iter else batch_idx + 1
+            step = getattr(runner, "iter", None)
+            if not isinstance(step, int):
+                step = batch_idx + 1
+            self.step = step
+
             step_interval = 1 if step <= self.dense_iters else self.interval
             if step_interval > 1 and step % step_interval != 0:
                 return
