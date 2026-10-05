@@ -1,6 +1,4 @@
 import inspect
-import os
-import warnings
 import torch
 import torch.nn as nn
 from pytorch_metric_learning import losses, reducers
