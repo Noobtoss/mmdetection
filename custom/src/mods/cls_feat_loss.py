@@ -6,10 +6,6 @@ import torch.nn as nn
 from pytorch_metric_learning import losses, reducers
 
 
-def _strict_degenerate() -> bool:
-    return os.getenv("CLS_FEAT_STRICT", os.getenv("DEBUG_NAN", "0")) == "1"
-
-
 class UnpackReducer(reducers.BaseReducer):
     def element_reduction(self, losses, loss_indices, embeddings, labels):
         if loss_indices.dtype == torch.bool:
@@ -21,6 +17,9 @@ class NormalizeEmbeddingsWrapper(nn.Module):
     def __init__(self, loss: nn.Module):
         super().__init__()
         self.loss = loss
+        # The wrapper owns normalization. PML otherwise normalizes again
+        # with eps=1e-12, undoing our clamp and amplifying gradients at zero.
+        self.loss.distance.normalize_embeddings = False
 
     def forward(self, embeddings, *args, **kwargs):
         embeddings = embeddings.float()
@@ -70,29 +69,11 @@ class ClsFeatLoss(nn.Module):
     def __init__(self, loss: str, **kwargs):
         super().__init__()
         self.loss = FeatLossFactory.get(loss, **kwargs)
-        self._warned_degenerate = False
-
-    def _degenerate_batch(self, cls_feats: torch.Tensor, target_cls: torch.Tensor) -> torch.Tensor:
-        n_pos = 0 if target_cls is None else int(target_cls.numel())
-        n_classes = 0 if target_cls is None else int(torch.unique(target_cls).numel())
-        msg = (f"[ClsFeatLoss] degenerate batch: {n_pos} selected ROIs, {n_classes} distinct classes. "
-               f"Metric-learning losses need at least two samples sharing a class, otherwise the reduced "
-               f"loss is empty and .mean() is 0/0 = NaN.")
-        if _strict_degenerate():
-            raise RuntimeError(msg)
-        if not self._warned_degenerate:
-            self._warned_degenerate = True
-            warnings.warn(msg + " (further occurrences suppressed; returning zero loss)")
-        return cls_feats.sum() * 0.0
 
     def forward(self,
                 cls_feats: torch.Tensor, target_cls: torch.Tensor = None, target_scores: torch.Tensor = None
                 ) -> torch.Tensor:
         if target_cls is None:
             target_cls = target_scores.max(-1).indices
-        if cls_feats.numel() == 0 or target_cls.numel() < 2:
-            return self._degenerate_batch(cls_feats, target_cls)
         loss_per_element = self.loss(cls_feats, target_cls).squeeze(-1)
-        if loss_per_element.numel() == 0:
-            return self._degenerate_batch(cls_feats, target_cls)
         return loss_per_element.mean()
