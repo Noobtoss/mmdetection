@@ -8,7 +8,6 @@ from mmdet.registry import RUNNERS
 from mmengine.config import Config
 from mmengine.runner import Runner
 
-from nan_debug import nan_debug
 
 DEFAULT_ARGS = {
     "faster-rcnn": Namespace(
@@ -136,10 +135,6 @@ def main():
 
     config = build_config(args)
     config = update_config(config, args.opts)
-
-    if os.getenv("DEBUG_NAN") == "1":
-        warnings.warn("⚠️ NaN debugging enabled: anomaly detection + first-non-finite hook")
-        config = nan_debug(config)
 
     train(config)
 
