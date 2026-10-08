@@ -239,4 +239,12 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
             else:
                 losses['loss_bbox'] = bbox_pred[pos_inds].sum()
 
+        if self.training:
+            for name in ('loss_cls', 'loss_bbox'):
+                loss = losses.get(name)
+                if loss is not None and not torch.isfinite(loss.detach()).all():
+                    raise FloatingPointError(
+                        f'Faster R-CNN numerical failure: standard training loss {name} '
+                        'is NaN/Inf. This is a standard detector loss, not the custom cls_feat_loss.')
+
         return losses
