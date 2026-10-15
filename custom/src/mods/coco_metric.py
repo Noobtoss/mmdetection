@@ -53,7 +53,7 @@ def compute_metric_bbox(_coco_api, coco_dt, iou_types) -> Dict[str, float]:
 
 @METRICS.register_module(force=True)
 class CocoMetric(_CocoMetric):
-    default_prefix: Optional[str] = 'metrics'
+    default_prefix: Optional[str] = 'eval'
 
     def __init__(self, *args, **kwargs):
         MMLogger.get_current_instance().warning('[Modded] CocoMetric')
