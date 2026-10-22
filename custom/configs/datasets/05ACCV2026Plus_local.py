@@ -74,7 +74,7 @@ test_dataloader = dict(
     dataset=dict(
         data_root=data_dir,
         metainfo=metainfo,
-        ann_file=ann_file_val,
+        ann_file=ann_file_test,
         data_prefix=dict(img='')
     )
 )
@@ -83,5 +83,5 @@ val_evaluator = dict(
     ann_file=ann_file_val
 )
 test_evaluator = dict(
-    ann_file=ann_file_val
+    ann_file=ann_file_test
 )
