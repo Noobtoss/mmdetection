@@ -1,13 +1,13 @@
 # dataset settings
-root_dir = '/Users/noobtoss/code_nexus/mmdetection'
-# root_dir = '/nfs/scratch/staff/schmittth/code_nexus/mmdetection'
-# root_dir = '/home/atuin/v147eb/v147eb15/code_nexus/mmdetection'
+root = '/Users/noobtoss/code_nexus/mmdetection'
+# root = '/nfs/scratch/staff/schmittth/code_nexus/mmdetection'
+# root = '/home/atuin/v147eb/v147eb15/code_nexus/mmdetection'
 dataset_type = 'CocoDataset'
-data_root = f'{root_dir}/datasets/05ACCV2026Plus'
+data_dir = f'{root}/datasets/05ACCV2026Plus'
 
-ann_file_train = f'{data_root}/annotations/annotation_test.json'
-ann_file_val = f'{data_root}/annotations/annotation_test.json'
-ann_file_test = f'{data_root}/annotations/annotation_test.json'
+ann_file_train = f'{data_dir}/annotation_train.json'
+ann_file_val = f'{data_dir}/annotation_test.json'
+ann_file_test = f'{data_dir}/annotation_test.json'
 
 backend_args = None
 
@@ -56,26 +56,26 @@ num_classes = len(metainfo['classes'])
 
 train_dataloader = dict(
     dataset=dict(
-        data_root=data_root,
+        data_root=data_dir,
         metainfo=metainfo,
         ann_file=ann_file_train,
-        data_prefix=dict(img='Images/')
+        data_prefix=dict(img='')
     )
 )
 val_dataloader = dict(
     dataset=dict(
-        data_root=data_root,
+        data_root=data_dir,
         metainfo=metainfo,
         ann_file=ann_file_val,
-        data_prefix=dict(img='Images/')
+        data_prefix=dict(img='')
     )
 )
 test_dataloader = dict(
     dataset=dict(
-        data_root=data_root,
+        data_root=data_dir,
         metainfo=metainfo,
         ann_file=ann_file_val,
-        data_prefix=dict(img='Images/')
+        data_prefix=dict(img='')
     )
 )
 

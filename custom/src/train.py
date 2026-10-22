@@ -14,7 +14,7 @@ DEFAULT_ARGS = {
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
         data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
-        model_cfg="../configs/models/faster-rcnn_r50_fpn_class_weights.py",
+        model_cfg="../configs/models/faster-rcnn_r50_fpn_scl_02_head_m.py",
         mods_cfg="../configs/mods.py",
         opts=["seed", "184181",
               "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
