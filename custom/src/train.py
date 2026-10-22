@@ -1,5 +1,4 @@
 import argparse
-import os
 import sys
 import warnings
 from argparse import Namespace
@@ -8,14 +7,20 @@ from mmdet.registry import RUNNERS
 from mmengine.config import Config
 from mmengine.runner import Runner
 
+from build_dataset_update import build_dataset_update
+
 
 DEFAULT_ARGS = {
     "faster-rcnn": Namespace(
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
-        data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
+        data_cfg="../configs/datasets/05ACCV2026Plus.py",
         model_cfg="../configs/models/faster-rcnn_r50_fpn_scl_02_head_m.py",
         mods_cfg="../configs/mods.py",
+        data_dir="/Users/noobtoss/code_nexus/mmdetection/datasets/05ACCV2026Plus",
+        ann_train=None,
+        ann_val=None,
+        ann_test=None,
         opts=["seed", "184181",
               "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
               "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
@@ -25,9 +30,13 @@ DEFAULT_ARGS = {
     "detr": Namespace(
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
-        data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
+        data_cfg="../configs/datasets/05ACCV2026Plus.py",
         model_cfg="../configs/models/detr_r50_scl_02_head_m.py",
         mods_cfg="../configs/mods.py",
+        data_dir="/Users/noobtoss/code_nexus/mmdetection/datasets/05ACCV2026Plus",
+        ann_train=None,
+        ann_val=None,
+        ann_test=None,
         opts=["seed", "184181",
               "load_from", "../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
               "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
@@ -36,9 +45,13 @@ DEFAULT_ARGS = {
     "def-detr": Namespace(
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
-        data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
+        data_cfg="../configs/datasets/05ACCV2026Plus.py",
         model_cfg="../configs/models/deformable-detr-refine-twostage_r50_scl_02_head_m.py",
         mods_cfg="../configs/mods.py",
+        data_dir="/Users/noobtoss/code_nexus/mmdetection/datasets/05ACCV2026Plus",
+        ann_train=None,
+        ann_val=None,
+        ann_test=None,
         opts=["seed", "184181",
               "load_from", "../../checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth",
               "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
@@ -47,9 +60,13 @@ DEFAULT_ARGS = {
     "dino": Namespace(
         run_name="unnamed_run",
         work_dir="/Users/noobtoss/code_nexus/mmdetection/runs/unnamed_run",
-        data_cfg="../configs/datasets/05ACCV2026Plus_local.py",
+        data_cfg="../configs/datasets/05ACCV2026Plus.py",
         model_cfg="../configs/models/dino-5scale_swin-l_scl_02_head_m.py",
         mods_cfg="../configs/mods.py",
+        data_dir="/Users/noobtoss/code_nexus/mmdetection/datasets/05ACCV2026Plus",
+        ann_train=None,
+        ann_val=None,
+        ann_test=None,
         opts=["seed", "184181",
               "load_from", "../../checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth",
               "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
@@ -73,6 +90,10 @@ def parse_args():
     parser.add_argument("--model_cfg", type=str, default=None)
     parser.add_argument("--data_cfg", type=str, default=None)
     parser.add_argument("--mods_cfg", type=str, default='../configs/mods.py')
+    parser.add_argument("--data_dir", type=str, default=None, help="base for relative data and COCO annotation paths; also the COCO image directory")
+    parser.add_argument("--ann_train", type=str, help="train ann json")
+    parser.add_argument("--ann_val", type=str, help="val ann json")
+    parser.add_argument("--ann_test", type=str, help="test ann json")
     parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
@@ -105,10 +126,11 @@ def build_config(args):
     return config
 
 
-def update_config(config, opts):
-    if not opts:
-        return config
+def update_config(config, opts, args=None):
     updates = {}
+    if args is not None:
+        updates.update(vars(args))
+    opts = opts or []
     for key, value in zip(opts[0::2], opts[1::2]):
         try:
             value = eval(value)
@@ -119,6 +141,7 @@ def update_config(config, opts):
         updates['randomness.seed'] = updates.pop('seed')
         # updates['randomness.deterministic'] = True
         updates['randomness.diff_rank_seed'] = True
+    updates = build_dataset_update(config, updates)
     config.merge_from_dict(updates, allow_list_keys=True)
     return config
 
@@ -134,7 +157,7 @@ def main():
         # args = DEFAULT_ARGS["dino"]
 
     config = build_config(args)
-    config = update_config(config, args.opts)
+    config = update_config(config, args.opts, args)
 
     train(config)
 

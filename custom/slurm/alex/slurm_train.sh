@@ -33,6 +33,14 @@ RUN_NAME="${RUN_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 OUT_DIR="${ROOT}/runs/${RUN_NAME}"
 MODEL_CFG="${KV[model_cfg]}"
 DATA_CFG="${KV[data_cfg]}"
+DATA_DIR="${KV[data_dir]}"
+if [[ -n "$DATA_DIR" ]]; then
+    DATA_DIR="${ROOT}/${DATA_DIR}"
+    PARAMS="$PARAMS data_dir $DATA_DIR"
+fi
+ANN_TRAIN="${KV[ann_train]}"
+ANN_VAL="${KV[ann_val]}"
+ANN_TEST="${KV[ann_test]}"
 MODS_CFG="${KV[train_cfg]:-custom/configs/mods.py}"
 if [[ -n "${KV[ckpt]}" ]]; then
     CKPT="${KV[ckpt]}"
@@ -64,11 +72,15 @@ export WANDB_CONFIG_DIR=$TMPDIR
 
 # ----- TRAINING ----------------------------------------------------
 python $ROOT/custom/src/train.py \
-       --run_name $RUN_NAME \
-       --work_dir $OUT_DIR \
-       --model_cfg $MODEL_CFG \
-       --data_cfg $DATA_CFG \
-       --mods_cfg $MODS_CFG \
+       --run_name  "$RUN_NAME" \
+       --work_dir  "$OUT_DIR" \
+       --model_cfg "$MODEL_CFG" \
+       --data_cfg  "$DATA_CFG" \
+       --mods_cfg  "$MODS_CFG" \
+       --data_dir  "$DATA_DIR" \
+       --ann_train "$ANN_TRAIN" \
+       --ann_val   "$ANN_VAL" \
+       --ann_test  "$ANN_TEST" \
        $PARAMS
 
 # ----- CLEANUP -----------------------------------------------------
