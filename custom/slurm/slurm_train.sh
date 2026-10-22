@@ -11,11 +11,11 @@
 #SBATCH --mem-per-cpu=64G          # RAM pro CPU Kern #20G #32G #64G
 
 # ----- DIRS --------------------------------------------------------
-ROOT_DIR=/nfs/scratch/staff/schmittth/code_nexus/mmdetection
+ROOT=/nfs/scratch/staff/schmittth/code_nexus/mmdetection
 export TMPDIR=$(mktemp -d "${TMPDIR:-/tmp}/mmdetection_${SLURM_JOB_ID}_XXXXXX")
 
 # ----- GET ARGS ----------------------------------------------------
-PARAMS_FILE="$ROOT_DIR/custom/slurm/slurm_params.txt"
+PARAMS_FILE="$ROOT/custom/slurm/slurm_params.txt"
 PARAMS=$(grep -v '^[[:space:]]*#' "$PARAMS_FILE" | sed -n "$((SLURM_ARRAY_TASK_ID))p")
 
 declare -A KV
@@ -29,13 +29,13 @@ done
 
 RUN_NAME="${KV[exp_name]:-unnamed_run}"
 RUN_NAME="${RUN_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
-OUT_DIR="${ROOT_DIR}/runs/${RUN_NAME}"
+OUT_DIR="${ROOT}/runs/${RUN_NAME}"
 MODEL_CFG="${KV[model_cfg]}"
 DATA_CFG="${KV[data_cfg]}"
 MODS_CFG="${KV[train_cfg]:-custom/configs/mods.py}"
 if [[ -n "${KV[ckpt]}" ]]; then
     CKPT="${KV[ckpt]}"
-    [[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT_DIR}/${CKPT}"
+    [[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT}/${CKPT}"
 fi
 
 # ----- ENVIRONMENT SETUP -------------------------------------------
@@ -46,7 +46,7 @@ module load cuda/cuda-11.8.0
 eval "$(conda shell.bash hook)"
 conda activate conda-mmdetection
 
-export PYTHONPATH="$ROOT_DIR/custom/src:$PYTHONPATH"
+export PYTHONPATH="$ROOT/custom/src:$PYTHONPATH"
 
 # ----- WANDB -------------------------------------------------------
 export WANDB_API_KEY=95177947f5f36556806da90ea7a0bf93ed857d58
@@ -56,7 +56,7 @@ export WANDB_DIR=$TMPDIR
 export WANDB_CONFIG_DIR=$TMPDIR
 
 # ----- TRAINING ----------------------------------------------------
-python $ROOT_DIR/custom/src/train.py \
+python $ROOT/custom/src/train.py \
        --run_name $RUN_NAME \
        --work_dir $OUT_DIR \
        --model_cfg $MODEL_CFG \

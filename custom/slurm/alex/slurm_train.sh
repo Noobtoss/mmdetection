@@ -12,11 +12,11 @@
 #SBATCH --mail-user=thomas.schmitt@th-nuernberg.de
 
 # ----- DIRS --------------------------------------------------------
-ROOT_DIR="$WORK/code_nexus/mmdetection"
+ROOT="$WORK/code_nexus/mmdetection"
 JOB_DIR=$TMPDIR
 
 # ----- GET ARGS ----------------------------------------------------
-PARAMS_FILE="$ROOT_DIR/custom/slurm/alex/slurm_params.txt"
+PARAMS_FILE="$ROOT/custom/slurm/alex/slurm_params.txt"
 PARAMS=$(grep -v '^[[:space:]]*#' "$PARAMS_FILE" | sed -n "$((SLURM_ARRAY_TASK_ID))p")
 
 declare -A KV
@@ -30,13 +30,13 @@ done
 
 RUN_NAME="${KV[exp_name]:-unnamed_run}"
 RUN_NAME="${RUN_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
-OUT_DIR="${ROOT_DIR}/runs/${RUN_NAME}"
+OUT_DIR="${ROOT}/runs/${RUN_NAME}"
 MODEL_CFG="${KV[model_cfg]}"
 DATA_CFG="${KV[data_cfg]}"
 MODS_CFG="${KV[train_cfg]:-custom/configs/mods.py}"
 if [[ -n "${KV[ckpt]}" ]]; then
     CKPT="${KV[ckpt]}"
-    [[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT_DIR}/${CKPT}"
+    [[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT}/${CKPT}"
 fi
 
 # ----- ENVIRONMENT SETUP -------------------------------------------
@@ -49,7 +49,7 @@ module load cuda/12.8.1
 eval "$(conda shell.bash hook)"
 conda activate conda-mmdetection
 
-export PYTHONPATH="$ROOT_DIR/custom/src:$PYTHONPATH"
+export PYTHONPATH="$ROOT/custom/src:$PYTHONPATH"
 
 # --- PROXY  --------------------------------------------------------
 export http_proxy=http://proxy:80
@@ -63,7 +63,7 @@ export WANDB_DIR=$TMPDIR
 export WANDB_CONFIG_DIR=$TMPDIR
 
 # ----- TRAINING ----------------------------------------------------
-python $ROOT_DIR/custom/src/train.py \
+python $ROOT/custom/src/train.py \
        --run_name $RUN_NAME \
        --work_dir $OUT_DIR \
        --model_cfg $MODEL_CFG \
