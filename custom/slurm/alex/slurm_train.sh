@@ -30,7 +30,6 @@ export PYTHONPATH="$ROOT/custom/src:$PYTHONPATH"
 # ----- GET ARGS ----------------------------------------------------
 ARGS_FILE="$ROOT/custom/slurm/alex/slurm_args.txt"
 ARGS=$(grep -v '^[[:space:]]*#' "$ARGS_FILE" | sed -n "$((SLURM_ARRAY_TASK_ID))p")
-ARGS=$(python "$ROOT/custom/slurm/expand_args.py" --root "$ROOT" "$ARGS") || exit 1
 
 declare -A KV
 read -r -a ARR <<< "$ARGS"
@@ -39,6 +38,26 @@ for ((i=0; i<${#ARR[@]}; i+=2)); do
     value="${ARR[$i+1]}"
     KV["$key"]="$value"
 done
+
+# ----- PARSE DATASET -----------------------------------------------
+DATASET="${KV[dataset]}"
+if [[ -n "$DATASET" ]]; then
+    DATASET_ARGS=$(python -c '
+    import json
+    import sys
+    args = json.load(open(sys.argv[1]))[sys.argv[2]]
+    print(" ".join(f"{key} {value}" for key, value in args.items()))
+    ' "$ROOT/../../data_nexus/phd_experiments/datasets.json" "$DATASET") || exit 1
+    ARGS="$ARGS $DATASET_ARGS"
+    read -r -a ARR <<< "$DATASET_ARGS"
+    for ((i=0; i<${#ARR[@]}; i+=2)); do
+        key="${ARR[$i]}"
+        value="${ARR[$i+1]}"
+        KV["$key"]="$value"
+    done
+fi
+
+# ----- SET ARGS ----------------------------------------------------
 [[ "$ARGS" != *"seed"* ]] && ARGS="$ARGS seed ${SLURM_ARRAY_JOB_ID}"
 
 RUN_NAME="${KV[exp_name]:-unnamed_run}"
