@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=mmdetection # Kurzname des Jobs
-#SBATCH --array=1,2%3
+#SBATCH --array=3,4,5%3
 #SBATCH --output=logs/%A_%a.out
 #SBATCH --partition=p6             # p4
 #SBATCH --qos=gpuultimate

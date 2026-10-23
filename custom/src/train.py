@@ -100,7 +100,12 @@ def parse_args():
         default=None,
         nargs=argparse.REMAINDER,
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.ann_test and not args.ann_val: warnings.warn("--ann_val missing; using --ann_test.")
+    if args.ann_val and not args.ann_test: warnings.warn("--ann_test missing; using --ann_val.")
+    if not args.ann_val: args.ann_val = args.ann_test
+    if not args.ann_test: args.ann_test = args.ann_val
+    return args
 
 
 def build_config(args):
