@@ -15,38 +15,6 @@
 ROOT="$WORK/code_nexus/mmdetection"
 JOB_DIR=$TMPDIR
 
-# ----- GET ARGS ----------------------------------------------------
-PARAMS_FILE="$ROOT/custom/slurm/alex/slurm_params.txt"
-PARAMS=$(grep -v '^[[:space:]]*#' "$PARAMS_FILE" | sed -n "$((SLURM_ARRAY_TASK_ID))p")
-
-declare -A KV
-read -r -a ARR <<< "$PARAMS"
-for ((i=0; i<${#ARR[@]}; i+=2)); do
-    key="${ARR[$i]}"
-    value="${ARR[$i+1]}"
-    KV["$key"]="$value"
-done
-[[ "$PARAMS" != *"seed"* ]] && PARAMS="$PARAMS seed ${SLURM_ARRAY_JOB_ID}"
-
-RUN_NAME="${KV[exp_name]:-unnamed_run}"
-RUN_NAME="${RUN_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
-OUT_DIR="${ROOT}/runs/${RUN_NAME}"
-MODEL_CFG="${KV[model_cfg]}"
-DATA_CFG="${KV[data_cfg]}"
-DATA_DIR="${KV[data_dir]}"
-if [[ -n "$DATA_DIR" ]]; then
-    DATA_DIR="${ROOT}/${DATA_DIR}"
-    PARAMS="$PARAMS data_dir $DATA_DIR"
-fi
-ANN_TRAIN="${KV[ann_train]}"
-ANN_VAL="${KV[ann_val]}"
-ANN_TEST="${KV[ann_test]}"
-MODS_CFG="${KV[train_cfg]:-custom/configs/mods.py}"
-if [[ -n "${KV[ckpt]}" ]]; then
-    CKPT="${KV[ckpt]}"
-    [[ "$PARAMS" != *"load_from"* ]] && PARAMS="$PARAMS load_from ${ROOT}/${CKPT}"
-fi
-
 # ----- ENVIRONMENT SETUP -------------------------------------------
 unset SLURM_EXPORT_ENV
 
@@ -58,6 +26,39 @@ eval "$(conda shell.bash hook)"
 conda activate conda-mmdetection
 
 export PYTHONPATH="$ROOT/custom/src:$PYTHONPATH"
+
+# ----- GET ARGS ----------------------------------------------------
+ARGS_FILE="$ROOT/custom/slurm/alex/slurm_args.txt"
+ARGS=$(grep -v '^[[:space:]]*#' "$ARGS_FILE" | sed -n "$((SLURM_ARRAY_TASK_ID))p")
+ARGS=$(python "$ROOT/custom/slurm/expand_args.py" --root "$ROOT" "$ARGS") || exit 1
+
+declare -A KV
+read -r -a ARR <<< "$ARGS"
+for ((i=0; i<${#ARR[@]}; i+=2)); do
+    key="${ARR[$i]}"
+    value="${ARR[$i+1]}"
+    KV["$key"]="$value"
+done
+[[ "$ARGS" != *"seed"* ]] && ARGS="$ARGS seed ${SLURM_ARRAY_JOB_ID}"
+
+RUN_NAME="${KV[exp_name]:-unnamed_run}"
+RUN_NAME="${RUN_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
+OUT_DIR="${ROOT}/runs/${RUN_NAME}"
+MODEL_CFG="${KV[model_cfg]}"
+DATA_CFG="${KV[data_cfg]}"
+DATA_DIR="${KV[data_dir]}"
+if [[ -n "$DATA_DIR" ]]; then
+    DATA_DIR="${ROOT}/${DATA_DIR}"
+    ARGS="$ARGS data_dir $DATA_DIR"
+fi
+ANN_TRAIN="${KV[ann_train]}"
+ANN_VAL="${KV[ann_val]}"
+ANN_TEST="${KV[ann_test]}"
+MODS_CFG="${KV[train_cfg]:-custom/configs/mods.py}"
+if [[ -n "${KV[ckpt]}" ]]; then
+    CKPT="${KV[ckpt]}"
+    [[ "$ARGS" != *"load_from"* ]] && ARGS="$ARGS load_from ${ROOT}/${CKPT}"
+fi
 
 # --- PROXY  --------------------------------------------------------
 export http_proxy=http://proxy:80
@@ -81,7 +82,7 @@ python $ROOT/custom/src/train.py \
        --ann_train "$ANN_TRAIN" \
        --ann_val   "$ANN_VAL" \
        --ann_test  "$ANN_TEST" \
-       $PARAMS
+       $ARGS
 
 # ----- CLEANUP -----------------------------------------------------
 KEEP_FILES=("last_checkpoint")
