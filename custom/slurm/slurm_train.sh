@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=mmdetection # Kurzname des Jobs
-#SBATCH --array=3,4,5%3
+#SBATCH --array=1-3%3
 #SBATCH --output=logs/%A_%a.out
 #SBATCH --partition=p6             # p4
 #SBATCH --qos=gpuultimate
@@ -25,8 +25,21 @@ conda activate conda-mmdetection
 export PYTHONPATH="$ROOT/custom/src:$PYTHONPATH"
 
 # ----- GET ARGS ----------------------------------------------------
-ARGS_FILE="$ROOT/custom/slurm/slurm_args.txt"
-ARGS=$(grep -v '^[[:space:]]*#' "$ARGS_FILE" | sed -n "$((SLURM_ARRAY_TASK_ID))p")
+EXP_MAP_FILE="$ROOT/custom/slurm/experiments_map.txt"
+EXP_ARGS_FILE="$ROOT/custom/slurm/experiments.json"
+
+EXP_NAME=$(grep -v '^[[:space:]]*#' "$EXP_MAP_FILE" | awk -v id="$SLURM_ARRAY_TASK_ID" '$1 == id {print $2; exit}')
+if [[ -z "$EXP_NAME" ]]; then
+    echo "ERROR: no exp_name for task id $SLURM_ARRAY_TASK_ID in $EXP_MAP_FILE" >&2
+    exit 1
+fi
+
+ARGS=$(python -c '
+import json, sys
+exp = json.load(open(sys.argv[1]))[sys.argv[2]]
+print(" ".join(f"{k} {v}" for k, v in exp.items()))
+' "$EXP_ARGS_FILE" "$EXP_NAME") || { echo "ERROR: exp_name '$EXP_NAME' not found in $EXP_ARGS_FILE" >&2; exit 1; }
+ARGS="exp_name $EXP_NAME $ARGS"
 
 declare -A KV
 read -r -a ARR <<< "$ARGS"
@@ -35,25 +48,6 @@ for ((i=0; i<${#ARR[@]}; i+=2)); do
     value="${ARR[$i+1]}"
     KV["$key"]="$value"
 done
-
-# ----- PARSE DATASET -----------------------------------------------
-DATASET="${KV[dataset]}"
-if [[ -n "$DATASET" ]]; then
-    DATASET_ARGS=$(python -c '
-import json
-import sys
-
-args = json.load(open(sys.argv[1]))[sys.argv[2]]
-print(" ".join(f"{key} {value}" for key, value in args.items()))
-' "$ROOT/../../data_nexus/phd_experiments/datasets.json" "$DATASET") || exit 1
-    ARGS="$ARGS $DATASET_ARGS"
-    read -r -a ARR <<< "$DATASET_ARGS"
-    for ((i=0; i<${#ARR[@]}; i+=2)); do
-        key="${ARR[$i]}"
-        value="${ARR[$i+1]}"
-        KV["$key"]="$value"
-    done
-fi
 
 # ----- SET ARGS ----------------------------------------------------
 [[ "$ARGS" != *"seed"* ]] && ARGS="$ARGS seed ${SLURM_ARRAY_JOB_ID}"
@@ -98,7 +92,13 @@ python $ROOT/custom/src/train.py \
        $ARGS
 
 # ----- CLEANUP -----------------------------------------------------
-KEEP_FILES=("last_checkpoint")
+if ! LAST_CKPT=$(cat "$OUT_DIR/last_checkpoint") ||
+   [[ ! -f "$OUT_DIR/${LAST_CKPT##*/}" ]] ||
+   ! mv -f "$OUT_DIR/${LAST_CKPT##*/}" "$OUT_DIR/${RUN_NAME}.pth" ||
+   [[ ! -f "$OUT_DIR/${RUN_NAME}.pth" ]]; then
+    echo "ERROR: cannot preserve last checkpoint; skipping cleanup." >&2
+    exit 1
+fi
 
 for i in 1 2 3 4 5; do
     wandb sync --sync-all && break
@@ -108,10 +108,8 @@ done
 
 rm -rf "$TMPDIR"
 rm -rf "$OUT_DIR"/*/vis_data
-find "$OUT_DIR/$EXP_NAME" -type f \
-  $(printf ' ! -name %s' "${KEEP_FILES[@]}") \
-  ! -name "*.py" \
-  ! -name "epoch_*.pth" \
-  ! -name "best_*.pth" \
+find "$OUT_DIR" -type f \
+  ! -name "*.log" \
+  ! -name "${RUN_NAME}.pth" \
   -delete
 find "$OUT_DIR" -type d -empty -delete
