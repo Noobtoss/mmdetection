@@ -21,7 +21,7 @@ param_scheduler = [
 # model ----------------------------------------------------------------------------------------------------------------
 
 # num_classes = 37   # hard encoding bad
-# load_from = '/nfs/scratch/staff/schmittth/code_nexus/mmdetection/checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth'
+# load_from = '/nfs/scratch/staff/schmittth/code_hub/mmdetection/checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth'
 load_from = '../../../checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth'
 
 model = dict(

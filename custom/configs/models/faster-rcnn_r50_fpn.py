@@ -27,7 +27,7 @@ param_scheduler = [
 # model ----------------------------------------------------------------------------------------------------------------
 
 # num_classes = 37   # hard encoding bad
-# load_from = '/nfs/scratch/staff/schmittth/code_nexus/mmdetection/checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth'
+# load_from = '/nfs/scratch/staff/schmittth/code_hub/mmdetection/checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth'
 load_from = '../../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth'
 
 model = dict(

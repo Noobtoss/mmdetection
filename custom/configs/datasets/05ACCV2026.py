@@ -1,7 +1,7 @@
 # dataset settings
-# root = '/Users/noobtoss/code_nexus/mmdetection'
-root = '/nfs/scratch/staff/schmittth/code_nexus/mmdetection'
-# root = '/home/atuin/v147eb/v147eb15/code_nexus/mmdetection'
+# root = '/Users/noobtoss/code_hub/mmdetection'
+root = '/nfs/scratch/staff/schmittth/code_hub/mmdetection'
+# root = '/home/atuin/v147eb/v147eb15/code_hub/mmdetection'
 dataset_type = 'CocoDataset'
 data_dir = f'{root}/datasets/05ACCV2026'
 

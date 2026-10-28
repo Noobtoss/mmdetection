@@ -12,7 +12,7 @@
 #SBATCH --mail-user=thomas.schmitt@th-nuernberg.de
 
 # ----- DIRS --------------------------------------------------------
-ROOT="$WORK/code_nexus/mmdetection"
+ROOT="$WORK/code_hub/mmdetection"
 JOB_DIR=$TMPDIR
 
 # ----- ENVIRONMENT SETUP -------------------------------------------
