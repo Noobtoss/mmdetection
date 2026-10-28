@@ -65,9 +65,9 @@ if [[ -n "$DATA_DIR" ]]; then
     DATA_DIR="${ROOT}/${DATA_DIR}"
     ARGS="$ARGS data_dir $DATA_DIR"
 fi
-ANN_TRAIN="${KV[ann_train]}"
-ANN_VAL="${KV[ann_val]}"
-ANN_TEST="${KV[ann_test]}"
+TRAIN_ANN="${KV[train_ann]}"
+VAL_ANN="${KV[val_ann]}"
+TEST_ANN="${KV[test_ann]}"
 MODS_CFG="${KV[train_cfg]:-custom/configs/mods.py}"
 if [[ -n "${KV[ckpt]}" ]]; then
     CKPT="${KV[ckpt]}"
@@ -93,9 +93,9 @@ python $ROOT/custom/src/train.py \
        --data_cfg  "$DATA_CFG" \
        --mods_cfg  "$MODS_CFG" \
        --data_dir  "$DATA_DIR" \
-       --ann_train "$ANN_TRAIN" \
-       --ann_val   "$ANN_VAL" \
-       --ann_test  "$ANN_TEST" \
+       --train_ann "$TRAIN_ANN" \
+       --val_ann   "$VAL_ANN" \
+       --test_ann  "$TEST_ANN" \
        $ARGS
 
 # ----- CLEANUP -----------------------------------------------------
