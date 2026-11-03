@@ -20,8 +20,8 @@ DEFAULT_ARGS = {
         test_ann=None,
         opts=["seed", "184181",
               "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
-              "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
-              "model.roi_head.bbox_head.cls_feat_loss.loss_weight", "2",
+              "wandb_project", "runs-mmdetection",
+              "cls_feat", None,
               ]
     ),
     "detr": Namespace(
@@ -36,7 +36,7 @@ DEFAULT_ARGS = {
         test_ann=None,
         opts=["seed", "184181",
               "load_from", "../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
-              "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
+              "wandb_project", "runs-mmdetection",
               ]
     ),
     "def-detr": Namespace(
@@ -51,7 +51,7 @@ DEFAULT_ARGS = {
         test_ann=None,
         opts=["seed", "184181",
               "load_from", "../../checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth",
-              "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
+              "wandb_project", "runs-mmdetection",
               ]
     ),
     "dino": Namespace(
@@ -66,7 +66,7 @@ DEFAULT_ARGS = {
         test_ann=None,
         opts=["seed", "184181",
               "load_from", "../../checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth",
-              "visualizer.vis_backends.1.init_kwargs.project", "runs-mmdetection",
+              "wandb_project", "runs-mmdetection",
               ]
     ),
 }

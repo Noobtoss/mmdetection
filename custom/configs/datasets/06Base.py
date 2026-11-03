@@ -1,13 +1,14 @@
-# dataset settings
+import os
+
 # root = '/Users/noobtoss/code_hub/mmdetection'
-root = '{{$MMDET_ROOT:/nfs/scratch/staff/schmittth/code_hub/mmdetection}}'
+# root = '/nfs/scratch/staff/schmittth/code_hub/mmdetection}}'
 # root = '/home/atuin/v147eb/v147eb15/code_hub/mmdetection'
 dataset_type = 'CocoDataset'
-data_dir = 'ENTER_VALID_DATA_DIR'
+data_dir = '{{$MMDET_DATA_DIR:}}'
 
-ann_file_train = f'{data_dir}/ENTER_VALID_ANNOTATION_TRAIN'
-ann_file_val = f'{data_dir}/ENTER_VALID_ANNOTATION_VAL'
-ann_file_test = f'{data_dir}/ENTER_VALID_ANNOTATION_TEST'
+ann_file_train = os.path.join(data_dir, '{{$MMDET_ANN_FILE_TRAIN:}}')
+ann_file_val = os.path.join(data_dir, '{{$MMDET_ANN_FILE_VAL:}}')
+ann_file_test = os.path.join(data_dir, '{{$MMDET_ANN_FILE_TEST:}}')
 
 backend_args = None
 

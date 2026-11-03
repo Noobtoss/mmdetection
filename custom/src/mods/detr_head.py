@@ -89,7 +89,7 @@ class DETRHead(_DETRHead):
         # >>> MOD
         # TODO: removed emotional support assert, weakly tested
         # assert not self.loss_cls.use_sigmoid, "Current implementation only supports loss_cls.use_sigmoid=False"
-        self.cls_feat_loss = MODELS.build(cls_feat_loss) if cls_feat_loss is not None else None
+        self.cls_feat_loss = MODELS.build(cls_feat_loss) if cls_feat_loss is not None and cls_feat_loss.get('loss_weight', None) is not None else None
         self.cls_feat_proj_head = MODELS.build(cls_feat_proj_head) if cls_feat_proj_head is not None else None
         # <<< MOD
 

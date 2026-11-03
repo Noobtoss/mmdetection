@@ -17,7 +17,7 @@ class Shared2FCBBoxHead(_Shared2FCBBoxHead):
     def __init__(self, *args, cls_feat_loss: ConfigType = None, cls_feat_proj_head: ConfigType = None, **kwargs):
         MMLogger.get_current_instance().warning('[Modded] Shared2FCBBoxHead')
         super().__init__(*args, **kwargs)
-        self.cls_feat_loss = MODELS.build(cls_feat_loss) if cls_feat_loss is not None else None
+        self.cls_feat_loss = MODELS.build(cls_feat_loss) if cls_feat_loss is not None and cls_feat_loss.get('loss_weight', None) is not None else None
         self.cls_feat_proj_head = MODELS.build(cls_feat_proj_head) if cls_feat_proj_head is not None else None
 
     def forward(self, x: Tuple[Tensor]) -> tuple:

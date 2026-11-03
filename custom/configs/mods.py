@@ -1,3 +1,6 @@
+wandb_project = '{{$MMDET_WANDB_PROJECT:runs-mmdetection}}'
+run_name = '{{$MMDET_RUN_NAME:unnamed_run}}'
+
 custom_imports = dict(
     imports=['mods'],
     allow_failed_imports=False
@@ -8,8 +11,8 @@ vis_backends = [
     dict(
         type='WandbVisBackend',
         init_kwargs=dict(
-            project='runs-mmdetection',
-            name='unnamed_run'
+            project=wandb_project,
+            name=run_name
         )
     )
 ]
