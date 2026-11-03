@@ -4,6 +4,7 @@ root = '/nfs/scratch/staff/schmittth/code_hub/mmdetection'
 # root = '/home/atuin/v147eb/v147eb15/code_hub/mmdetection'
 dataset_type = 'CocoDataset'
 data_dir = f'{root}/datasets/05ACCV2026'
+# data_dir = f'{root}/datasets/05ACCV2026Plus'
 
 ann_file_train = f'{data_dir}/annotation_train.json'
 ann_file_val = f'{data_dir}/annotation_test.json'
