@@ -39,7 +39,6 @@ import json, sys
 exp = json.load(open(sys.argv[1]))[sys.argv[2]]
 print(" ".join(f"{k} {v}" for k, v in exp.items()))
 ' "$EXP_ARGS_FILE" "$RUN_NAME") || { echo "ERROR: run_name '$RUN_NAME' not found in $EXP_ARGS_FILE" >&2; exit 1; }
-ARGS="run_name $RUN_NAME $ARGS"
 
 declare -A KV
 read -r -a ARR <<< "$ARGS"
@@ -52,7 +51,6 @@ done
 # ----- SET ARGS ----------------------------------------------------
 [[ "$ARGS" != *"seed"* ]] && ARGS="$ARGS seed ${SLURM_ARRAY_JOB_ID}"
 
-RUN_NAME="${KV[run_name]:-unnamed_run}"
 RUN_NAME="${RUN_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 OUT_DIR="${ROOT}/runs/${RUN_NAME}"
 MODEL_CFG="${KV[model_cfg]}"
@@ -92,13 +90,10 @@ python $ROOT/custom/src/train.py \
        $ARGS
 
 # ----- CLEANUP -----------------------------------------------------
-if ! LAST_CKPT=$(cat "$OUT_DIR/last_checkpoint") ||
-   [[ ! -f "$OUT_DIR/${LAST_CKPT##*/}" ]] ||
-   ! mv -f "$OUT_DIR/${LAST_CKPT##*/}" "$OUT_DIR/${RUN_NAME}.pth" ||
-   [[ ! -f "$OUT_DIR/${RUN_NAME}.pth" ]]; then
-    echo "ERROR: cannot preserve last checkpoint; skipping cleanup." >&2
-    exit 1
-fi
+KEEP_FILES=("last_checkpoint.pth" "config.py")
+
+LAST_CKPT=$(cat "$OUT_DIR/last_checkpoint")
+mv -f "$OUT_DIR/${LAST_CKPT##*/}" "$OUT_DIR/last_checkpoint.pth"
 
 for i in 1 2 3 4 5; do
     wandb sync --sync-all && break
@@ -108,8 +103,5 @@ done
 
 rm -rf "$TMPDIR"
 rm -rf "$OUT_DIR"/*/vis_data
-find "$OUT_DIR" -type f \
-  ! -name "*.log" \
-  ! -name "${RUN_NAME}.pth" \
-  -delete
+find "$OUT_DIR" -type f $(printf ' ! -name %s' "${KEEP_FILES[@]}") -delete
 find "$OUT_DIR" -type d -empty -delete
