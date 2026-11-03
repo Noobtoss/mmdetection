@@ -1,8 +1,8 @@
-_base_ = '../../../configs/deformable_detr/deformable-detr-refine-twostage_r50_16xb2-50e_coco.py'
+_base_ = '../../../configs/detr/detr_r50_8xb2-150e_coco.py'
 
 # train ----------------------------------------------------------------------------------------------------------------
 
-max_epochs = 50
+max_epochs = 100
 train_cfg = dict(
     type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval=1)
 val_cfg = dict(type='ValLoop')
@@ -14,29 +14,28 @@ param_scheduler = [
         begin=0,
         end=max_epochs,
         by_epoch=True,
-        milestones=[40],
+        milestones=[70,90],
         gamma=0.1)
 ]
 
 # model ----------------------------------------------------------------------------------------------------------------
 
 # num_classes = 37   # hard encoding bad
-# load_from = '/nfs/scratch/staff/schmittth/code_hub/mmdetection/checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth'
-load_from = '../../../checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth'
+# load_from = '/nfs/scratch/staff/schmittth/code_hub/mmdetection/checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth'
+load_from = '../../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth'
 
 model = dict(
-    bbox_head=dict(
-        type='DeformableDETRHead',
+    bbox_head = dict(
+        type='DETRHead',
         num_classes=37,
-        cls_feat_loss=dict(
+        cls_feat_loss = dict(
             type='ClsFeatLoss',
             loss='sup_con_loss',
-            loss_weight=0.2
-        ),
-        cls_feat_proj_head=dict(
-            type='ClsFeatProjHead',
-            proj_head='m',
-            dim=256  # hard encoding bad
+            loss_weight=0
         )
     )
+)
+
+train_dataloader = dict(
+    batch_size = 2 # 4
 )

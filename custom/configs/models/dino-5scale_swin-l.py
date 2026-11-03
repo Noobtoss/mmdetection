@@ -32,11 +32,12 @@ model = dict(
         cls_feat_loss=dict(
             type='ClsFeatLoss',
             loss='sup_con_loss',
-            loss_weight=0
+            loss_weight=0.2
+        ),
+        cls_feat_proj_head=dict(
+            type='ClsFeatProjHead',
+            proj_head='m',
+            dim=256  # hard encoding bad
         )
     )
-)
-
-train_dataloader = dict(
-    batch_size = 2 # 4
 )
