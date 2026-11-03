@@ -5,7 +5,7 @@ model = dict(
         cls_feat_loss = dict(
             type='ClsFeatLoss',
             loss='{{$CLS_FEAT_LOSS:sup_con_loss}}',
-            loss_weight={{'$CLS_FEAT:0.2'}}
+            loss_weight=float('{{$CLS_FEAT:0.2}}')
         ),
         cls_feat_proj_head = dict(
             type='ClsFeatProjHead',
