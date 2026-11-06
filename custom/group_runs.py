@@ -28,7 +28,7 @@ def read_config(config_path):
     return config
 
 
-def group_runs(runs_dir, target_dir=None, valid_only=True):
+def group_runs(runs_dir, target_dir=None, valid_only=True, tag_runs=False):
     runs_dir = Path(runs_dir).resolve()
     target_dir = Path(target_dir).resolve() if target_dir is not None else runs_dir.parent / "results"
     if not runs_dir.is_dir():
@@ -49,8 +49,7 @@ def group_runs(runs_dir, target_dir=None, valid_only=True):
     completed = []
     for group, runs in groups.items():
         target = target_dir / group
-        reference_path = target / "config.py" if target.exists() or target.is_symlink() else None
-        reference = read_config(reference_path) if reference_path else None
+        reference = None
         moves = {}
         for run in runs:
             config_path = run / "config.py"
@@ -60,8 +59,16 @@ def group_runs(runs_dir, target_dir=None, valid_only=True):
                 continue
             config = read_config(config_path)
             if reference is None:
-                reference, reference_path = config, config_path
-            elif config != reference:
+                if tag_runs:
+                    model_name = str(config.get("model_name", "")).lower()
+                    match = re.search(r"faster-rcnn|deformable-detr|detr|dino", model_name)
+                    if match:
+                        target = target_dir / match[0] / group
+                    else:
+                        print(f"Warning: leaving {target} untagged: unsupported model_name: {model_name}")
+                reference_path = target / "config.py" if target.exists() or target.is_symlink() else config_path
+                reference = read_config(reference_path)
+            if config != reference:
                 raise ValueError(f"Configs differ: {reference_path} vs {config_path}")
 
             for checkpoint in checkpoints:
@@ -87,28 +94,6 @@ def group_runs(runs_dir, target_dir=None, valid_only=True):
 
     for run in completed:
         (run / "TRAIN_SUCCESS").unlink(missing_ok=True)
-
-
-def tag_runs(target_dir):
-    target_dir = Path(target_dir).resolve()
-    if not target_dir.is_dir():
-        return
-    for exp in sorted(target_dir.iterdir()):
-        config_path = exp / "config.py"
-        if not exp.is_dir() or not config_path.is_file():
-            continue
-        model_name = str(read_config(config_path).get("model_name", "")).lower()
-        match = re.search(r"faster-rcnn|deformable-detr|detr|dino", model_name)
-        if not match:
-            print(f"Warning: skipping {exp}: unsupported model_name: {model_name}")
-            continue
-        target = target_dir / match[0] / exp.name
-        if target.exists() or target.is_symlink():
-            print(f"Skipping {exp}: destination already in use: {target}")
-            continue
-        target.parent.mkdir(parents=True, exist_ok=True)
-        print(f"Moving {exp} -> {target}")
-        shutil.move(str(exp), target)
 
 
 def parse_args():
@@ -140,6 +125,4 @@ if __name__ == "__main__":
             target_dir=Path(__file__).resolve().parents[3] / "data_hub/results",
             valid_only=True,
         )
-    group_runs(args.runs_dir, args.target_dir, args.valid_only)
-    if args.runs_dir.parent != args.target_dir.parent:
-        tag_runs(args.target_dir)
+    group_runs(args.runs_dir, args.target_dir, args.valid_only, tag_runs=args.runs_dir.parent != args.target_dir.parent)
