@@ -21,14 +21,15 @@ param_scheduler = [
 
 # model ----------------------------------------------------------------------------------------------------------------
 
-# num_classes = 37   # hard encoding bad
+# build_cfg sets this before loading; head outputs must match the dataset classes.
+num_classes = int('{{$MMDET_NUM_CLASSES:37}}')
 # load_from = '/nfs/scratch/staff/schmittth/code_hub/mmdetection/checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth'
 load_from = '../../../checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth'
 
 model = dict(
     bbox_head=dict(
         type='DINOHead',
-        num_classes=37,
+        num_classes=num_classes,
         cls_feat_loss=dict(
             type='ClsFeatLoss',
             loss='sup_con_loss',

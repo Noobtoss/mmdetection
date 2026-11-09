@@ -20,14 +20,15 @@ param_scheduler = [
 
 # model ----------------------------------------------------------------------------------------------------------------
 
-# num_classes = 37   # hard encoding bad
+# build_cfg sets this before loading; head outputs must match the dataset classes.
+num_classes = int('{{$MMDET_NUM_CLASSES:37}}')
 # load_from = '/nfs/scratch/staff/schmittth/code_hub/mmdetection/checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth'
 load_from = '../../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth'
 
 model = dict(
     bbox_head = dict(
         type='DETRHead',
-        num_classes=37,
+        num_classes=num_classes,
         cls_feat_loss = dict(
             type='ClsFeatLoss',
             loss='sup_con_loss',

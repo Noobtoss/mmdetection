@@ -1,4 +1,6 @@
+import json
 import os
+import pathlib
 
 # root = '/Users/noobtoss/code_hub/mmdetection'
 # root = '/nfs/scratch/staff/schmittth/code_hub/mmdetection}}'
@@ -12,48 +14,16 @@ ann_file_test = os.path.join(data_dir, '{{$MMDET_ANN_FILE_TEST:}}')
 
 backend_args = None
 
+# Read classes before building dataloaders so all splits use the annotation metadata.
 metainfo = dict(
-    classes=(
-        'Backware',
-        'Bauernbrot',
-        'Floesserbrot',
-        'Salzstange',
-        'Sonnenblumensemmel',
-        'Kuerbiskernsemmel',
-        'Roggensemmel',
-        'Dinkelsemmel',
-        'LaugenstangeSchinkenKaese',
-        'Pfefferlaugenbrezel',
-        'KernigeStange',
-        'Schokocroissant',
-        'Apfeltasche',
-        'Quarktasche',
-        'Mohnschnecke',
-        'Nussschnecke',
-        'Vanillehoernchen',
-        'Osterei',
-        'Osterbrezel',
-        'Kirschtasche',
-        'Fruechteschiffchen',
-        'Anisbrezel',
-        'Doppelsemmel',
-        'Fruestuecksemmel',
-        'Kaisersemmel',
-        'Kornknacker',
-        'Landbrot',
-        'Laugenbrezel',
-        'Laugenstange',
-        'Laugenzopf',
-        'Mohnsemmel',
-        'Mohnstange',
-        'Partybrot',
-        'Sandwichbroetchen',
-        'Sesamsemmel',
-        'Sesamstange',
-        'Vollgutsemmel'
+    classes=tuple(
+        category['name']
+        for category in json.loads(pathlib.Path(ann_file_train).read_text())['categories']
     )
 )
 num_classes = len(metainfo['classes'])
+if not num_classes:
+    raise ValueError(f'No classes found in {ann_file_train}')
 
 train_dataloader = dict(
     dataset=dict(

@@ -72,14 +72,21 @@ def update_cfg(cfg, opts, args=None):
 def init_cfg(args):
     cfg = Config({}, filename='config.py', cfg_text='# Merged configuration')
     cfg_files = [
-        args.model_cfg,
         args.data_cfg,
+        args.model_cfg,
         args.mods_cfg,
     ]
     for cfg_file in cfg_files:
         if cfg_file is None:
             continue
-        cfg.merge_from_dict(Config.fromfile(cfg_file).to_dict())
+        part = Config.fromfile(cfg_file)
+        if cfg_file == args.data_cfg:
+            # Set the class count before the model config builds its head.
+            os.environ['MMDET_NUM_CLASSES'] = str(part.num_classes)
+        elif cfg_file == args.model_cfg:
+            # Keep dataset overrides over the model's inherited COCO defaults.
+            part.merge_from_dict(cfg.to_dict())
+        cfg.merge_from_dict(part.to_dict())
     cfg.work_dir = args.work_dir
     cfg.run_name = args.run_name
     return cfg

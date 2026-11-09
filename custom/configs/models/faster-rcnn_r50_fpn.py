@@ -27,7 +27,8 @@ param_scheduler = [
 
 # model ----------------------------------------------------------------------------------------------------------------
 
-# num_classes = 37   # hard encoding bad
+# build_cfg sets this before loading; head outputs must match the dataset classes.
+num_classes = int('{{$MMDET_NUM_CLASSES:37}}')
 # load_from = '/nfs/scratch/staff/schmittth/code_hub/mmdetection/checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth'
 load_from = '../../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth'
 
@@ -36,7 +37,7 @@ model = dict(
         type="StandardRoIHead",
         bbox_head=dict(
             type='Shared2FCBBoxHead',
-            num_classes=37,  # num_classes)
+            num_classes=num_classes,
             cls_feat_loss = dict(
                 type='ClsFeatLoss',
                 loss='sup_con_loss',
