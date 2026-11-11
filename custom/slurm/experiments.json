@@ -1,5 +1,5 @@
 {
-  "ACCV2026Plus": {
+  "04": {
     "model_cfg": "custom/configs/models/faster-rcnn_r50_fpn.py",
     "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
@@ -9,7 +9,7 @@
     "test_ann": "experiments/04/annotation_test.json",
     "epochs": 20
   },
-  "ACCV2026Plus_scl_02_head_m": {
+  "04_scl_02_head_m": {
     "model_cfg": "custom/configs/models/faster-rcnn_r50_fpn_cls_feat.py",
     "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
@@ -22,7 +22,7 @@
     "cls_feat_proj_head": "m",
     "epochs": 20
   },
-  "ACCV2026Plus_detr": {
+  "04_detr": {
     "model_cfg": "custom/configs/models/detr_r50.py",
     "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
@@ -32,7 +32,7 @@
     "test_ann": "experiments/04/annotation_test.json",
     "epochs": 20
   },
-  "ACCV2026Plus_detr_scl_02_head_m": {
+  "04_detr_scl_02_head_m": {
     "model_cfg": "custom/configs/models/detr_r50_cls_feat.py",
     "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
@@ -45,7 +45,7 @@
     "cls_feat_proj_head": "m",
     "epochs": 20
   },
-  "ACCV2026Plus_defdetr": {
+  "04_defdetr": {
     "model_cfg": "custom/configs/models/deformable-detr-refine-twostage_r50.py",
     "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth",
@@ -55,7 +55,7 @@
     "test_ann": "experiments/04/annotation_test.json",
     "epochs": 20
   },
-  "ACCV2026Plus_defdetr_scl_02_head_m": {
+  "04_defdetr_scl_02_head_m": {
     "model_cfg": "custom/configs/models/deformable-detr-refine-twostage_r50_cls_feat.py",
     "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth",
@@ -68,7 +68,7 @@
     "cls_feat_proj_head": "m",
     "epochs": 20
   },
-  "ACCV2026Plus_dino": {
+  "04_dino": {
     "model_cfg": "custom/configs/models/dino-5scale_swin-l.py",
     "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth",
@@ -78,7 +78,7 @@
     "test_ann": "experiments/04/annotation_test.json",
     "epochs": 20
   },
-  "ACCV2026Plus_scl_02_head_m_dino": {
+  "04_scl_02_head_m_dino": {
     "model_cfg": "custom/configs/models/dino-5scale_swin-l_cls_feat.py",
     "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth",

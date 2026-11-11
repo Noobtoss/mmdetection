@@ -1,13 +1,13 @@
 # Experiments Faster-RCNN
-1    ACCV2026Plus
-2    ACCV2026Plus_scl_02_head_m
+1    04
+2    04_scl_02_head_m
 # Experiments DETR
-3    ACCV2026Plus_detr
-4    ACCV2026Plus_detr_scl_02_head_m
+3    04_detr
+4    04_detr_scl_02_head_m
 # Experiments DEF-DETR
-5    ACCV2026Plus_defdetr
-6    ACCV2026Plus_defdetr_scl_02_head_m
+5    04_defdetr
+6    04_defdetr_scl_02_head_m
 # Experiments DINO
-7    ACCV2026Plus_dino
-8    ACCV2026Plus_scl_02_head_m_dino
+7    04_dino
+8    04_scl_02_head_m_dino
 # Experiments End Current
