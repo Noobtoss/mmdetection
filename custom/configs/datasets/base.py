@@ -6,7 +6,7 @@ import pathlib
 # root = '/nfs/scratch/staff/schmittth/code_hub/mmdetection}}'
 # root = '/home/atuin/v147eb/v147eb15/code_hub/mmdetection'
 dataset_type = 'CocoDataset'
-data_dir = '{{$MMDET_DATA_DIR:}}'
+data_dir = os.path.abspath('{{$MMDET_DATA_DIR:}}')
 
 ann_file_train = os.path.join(data_dir, '{{$MMDET_ANN_FILE_TRAIN:}}')
 ann_file_val = os.path.join(data_dir, '{{$MMDET_ANN_FILE_VAL:}}')
