@@ -91,6 +91,7 @@ python $ROOT/custom/src/train.py \
 TRAIN_STATUS=$?
 
 # ----- CLEANUP -----------------------------------------------------
+# Accepted risk: cleanup deletes local W&B recovery data even if every sync attempt fails.
 KEEP_FILES=("last_checkpoint.pth" "config.py")
 
 LAST_CKPT=$(cat "$OUT_DIR/last_checkpoint")
