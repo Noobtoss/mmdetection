@@ -1,4 +1,5 @@
 import contextlib
+import copy
 import io
 import itertools
 import os.path as osp
@@ -14,27 +15,30 @@ from mmdet.evaluation import CocoMetric as _CocoMetric
 from mmdet.registry import METRICS
 
 
-def compute_metric_bbox(_coco_api, coco_dt, iou_types) -> Dict[str, float]:
+def compute_metric_bbox(cocoEval: COCOeval) -> Dict[str, float]:
     with contextlib.redirect_stdout(io.StringIO()):
         # class-agnostic AP
-        cocoEval_agnostic = COCOeval(_coco_api, coco_dt, iou_types)
+        cocoEval_agnostic = copy.copy(cocoEval)
+        # Shallow copies share params; copy them separately before changing settings.
+        cocoEval_agnostic.params = copy.deepcopy(cocoEval.params)
         cocoEval_agnostic.params.useCats = 0
         cocoEval_agnostic.evaluate()
         cocoEval_agnostic.accumulate()
         cocoEval_agnostic.summarize()
         # AP ignoring class 0
-        cocoEval_0p = COCOeval(_coco_api, coco_dt, iou_types)
-        cocoEval_0p.params.catIds = [c for c in _coco_api.get_cat_ids() if c != 0]
+        cocoEval_0p = copy.copy(cocoEval)
+        cocoEval_0p.params = copy.deepcopy(cocoEval.params)
+        cocoEval_0p.params.catIds = [c for c in cocoEval.params.catIds if c != 0]
         cocoEval_0p.evaluate()
         cocoEval_0p.accumulate()
         cocoEval_0p.summarize()
         # AP ignoring classes below 22
-        cocoEval_22p = COCOeval(_coco_api, coco_dt, iou_types)
-        cocoEval_22p.params.catIds = [c for c in _coco_api.get_cat_ids() if c >= 22]
+        cocoEval_22p = copy.copy(cocoEval)
+        cocoEval_22p.params = copy.deepcopy(cocoEval.params)
+        cocoEval_22p.params.catIds = [c for c in cocoEval.params.catIds if c >= 22]
         cocoEval_22p.evaluate()
         cocoEval_22p.accumulate()
         cocoEval_22p.summarize()
-    cocoEval = COCOeval(_coco_api, coco_dt, iou_types)
     cocoEval.evaluate()
     cocoEval.accumulate()
     redirect_string = io.StringIO()
@@ -48,7 +52,7 @@ def compute_metric_bbox(_coco_api, coco_dt, iou_types) -> Dict[str, float]:
         "mAP50-95_0p": cocoEval_0p.stats[0],
         # "mAP50-95_22p": cocoEval_22p.stats[0],
     }
-    return metrics
+    return {key: float(value) for key, value in metrics.items()}
 
 
 @METRICS.register_module(force=True)
@@ -170,11 +174,6 @@ class CocoMetric(_CocoMetric):
                     if metric_item not in coco_metric_names:
                         raise KeyError(
                             f'metric item "{metric_item}" is not supported')
-            # >>> MOD
-            if metric == 'bbox':
-                eval_results.update(compute_metric_bbox(self._coco_api, coco_dt, iou_type))
-                continue
-            # <<< MOD
             if metric == 'proposal':
                 coco_eval.params.useCats = 0
                 coco_eval.evaluate()
@@ -191,6 +190,12 @@ class CocoMetric(_CocoMetric):
                         f'{coco_eval.stats[coco_metric_names[item]]:.3f}')
                     eval_results[item] = val
             else:
+                # >>> MOD
+                if metric == 'bbox':
+                    bbox_metrics = compute_metric_bbox(coco_eval)
+                    if metric_items is None:
+                        eval_results.update(bbox_metrics)
+                # <<< MOD
                 coco_eval.evaluate()
                 coco_eval.accumulate()
                 coco_eval.summarize()
@@ -255,6 +260,10 @@ class CocoMetric(_CocoMetric):
                     logger.info('\n' + table.table)
 
                 if metric_items is None:
+                    # >>> MOD
+                    if metric == 'bbox':
+                        continue
+                    # <<< MOD
                     metric_items = [
                         'mAP', 'mAP_50', 'mAP_75', 'mAP_s', 'mAP_m', 'mAP_l'
                     ]
