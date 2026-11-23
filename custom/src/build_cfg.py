@@ -93,6 +93,7 @@ def init_cfg(args):
 
 
 def build_cfg(args):
+    args.opts = [item for key, value in zip(args.opts[0::2], args.opts[1::2]) for item in (key, None if value == "None" else value)]
     write_os_vars(args.opts, args)
     cfg = init_cfg(args)
     cfg = update_cfg(cfg, args.opts, args)
