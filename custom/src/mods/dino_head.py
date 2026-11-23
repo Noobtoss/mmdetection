@@ -119,6 +119,8 @@ class DINOHead(_DINOHead):
                 dn_meta=dn_meta)
             if self.cls_feat_loss is not None:
                 loss_dict['dn_loss_cls_feats'] = dn_losses_feat[-1]
+                for num_dec_layer, loss_feats_i in enumerate(dn_losses_feat[:-1]):
+                    loss_dict[f'd{num_dec_layer}.dn_loss_cls_feats'] = loss_feats_i
                 # loss_dict['logging_dn_cls_feats'] = self.cls_feat_loss.get_logging()
             # <<< MOD
             # collate denoising loss
