@@ -65,7 +65,7 @@ fi
 TRAIN_ANN="${KV[train_ann]}"
 VAL_ANN="${KV[val_ann]}"
 TEST_ANN="${KV[test_ann]}"
-MODS_CFG="${KV[train_cfg]:-custom/configs/mods.py}"
+MODS_CFG="${KV[mods_cfg]:-custom/configs/mods.py}"
 if [[ -n "${KV[ckpt]}" ]]; then
     CKPT="${KV[ckpt]}"
     [[ "$ARGS" != *"load_from"* ]] && ARGS="$ARGS load_from ${ROOT}/${CKPT}"
