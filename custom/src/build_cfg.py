@@ -23,19 +23,22 @@ def tag(cfg):
 def write_os_vars(opts, args=None):
     env_keys = {
         'cls_feat_loss', 'cls_feat', 'cls_feat_proj_head',
+        'class_weights',
         'data_dir', 'ann_file_train', 'ann_file_val', 'ann_file_test',
         'max_epochs',
         'run_name', 'wandb_project',
     }
-    updates = vars(args).copy() if args is not None else {}
+    updates = {
+        key: value
+        for key, value in vars(args).items()
+        if value is not None
+    } if args is not None else {}
     opts = opts or []
     updates.update(zip(opts[0::2], opts[1::2]))
     for key, value in updates.items():
         targets = ALIASES.get(key, key)
         for target in (targets,) if isinstance(targets, str) else targets:
             if target in env_keys:
-                if not target.startswith('cls_feat') and value in (None, ''):
-                    continue
                 os.environ[f'MMDET_{target.upper()}'] = str(value)
 
 
@@ -43,7 +46,7 @@ def write_os_vars(opts, args=None):
 def update_cfg(cfg, opts, args=None):
     updates = {}
     if args is not None:
-        updates.update(vars(args))
+        updates.update({key: value for key, value in vars(args).items() if value is not None})
     opts = opts or []
     for key, value in zip(opts[0::2], opts[1::2]):
         try:
@@ -64,7 +67,7 @@ def update_cfg(cfg, opts, args=None):
         # updates['randomness.deterministic'] = True
         updates['randomness.diff_rank_seed'] = True
     updates = {key: value for key, value in updates.items()
-               if value is not None and value != "" and key not in ('ann_file_train', 'ann_file_val', 'ann_file_test')}
+               if value != "" and key not in ('ann_file_train', 'ann_file_val', 'ann_file_test')}
     cfg.merge_from_dict(updates, allow_list_keys=True)
     return cfg
 
