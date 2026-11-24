@@ -16,6 +16,7 @@ from mmdet.registry import METRICS
 
 
 def compute_metric_bbox(cocoEval: COCOeval) -> Dict[str, float]:
+    # Acceptable issue: Evaluates unused 22p metrics and repeats base evaluation in compute_metrics().
     with contextlib.redirect_stdout(io.StringIO()):
         # class-agnostic AP
         cocoEval_agnostic = copy.copy(cocoEval)
