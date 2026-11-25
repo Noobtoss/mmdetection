@@ -11,28 +11,35 @@ cls_feat_proj_head = None if cls_feat_proj_head == 'None' else cls_feat_proj_hea
 class_weights = None if class_weights == 'None' else class_weights
 
 model = dict(
-    bbox_head = dict(
+    bbox_head=dict(
         loss_cls=dict(
             _delete_=True,
             type='ClassLossWeighted',
             class_weights=class_weights,
-            loss=dict(type='FocalLoss', use_sigmoid=True, gamma=2.0, alpha=0.25, loss_weight=1.0)
+            loss=dict(
+                type='CrossEntropyLoss',
+                use_sigmoid=class_weights is not None,
+                loss_weight=1.0
+            ),
+            class_weight=1.0 if class_weights is None else None,
+            bg_cls_weight=0.1 if class_weights is None else None
         ),
-        cls_feat_loss = None if cls_feat_loss is None else dict(
+        cls_feat_loss=None if cls_feat_loss is None else dict(
             type='ClsFeatLoss',
             loss=cls_feat_loss,
             loss_weight=cls_feat
         ),
-        cls_feat_proj_head = None if cls_feat_proj_head is None else dict(
+        cls_feat_proj_head=None if cls_feat_proj_head is None else dict(
             type='ClsFeatProjHead',
             proj_head=cls_feat_proj_head,
             dim=256  # hard encoding bad
         )
     ),
-    # TODO WHAT IN FHE TUFKC WORK IS THIS
     train_cfg=dict(assigner=dict(match_costs=[
-        dict(type='FocalLossCost', weight=1.0),
+        dict(type='ClassificationCost', weight=1.0)
+        if class_weights is None else
+        dict(type='FocalLossCost', gamma=0.0, alpha=0.5, weight=1.0),
         dict(type='BBoxL1Cost', weight=5.0, box_format='xywh'),
-        dict(type='IoUCost', iou_mode='giou', weight=2.0)
+        dict(type='IoUCost', weight=2.0, iou_mode='giou')
     ]))
 )

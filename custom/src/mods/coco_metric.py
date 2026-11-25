@@ -64,6 +64,16 @@ class CocoMetric(_CocoMetric):
         MMLogger.get_current_instance().warning('[Modded] CocoMetric')
         super().__init__(*args, **kwargs)
 
+    # >>> MOD
+    @_CocoMetric.dataset_meta.setter
+    def dataset_meta(self, dataset_meta):
+        self._dataset_meta = dataset_meta
+        if self._coco_api is not None and 'categories' in dataset_meta:
+            self._coco_api.dataset['categories'] = copy.deepcopy(dataset_meta['categories'])
+            self._coco_api.createIndex()
+            self.cat_ids = None
+    # <<< MOD
+
     def compute_metrics(self, results: list) -> Dict[str, float]:
         """Compute the metrics from processed results.
 
@@ -208,10 +218,15 @@ class CocoMetric(_CocoMetric):
                     assert len(self.cat_ids) == precisions.shape[2]
 
                     results_per_category = []
-                    for idx, cat_id in enumerate(self.cat_ids):
+                    # >>> MOD
+                    for idx, cat_id in enumerate(coco_eval.params.catIds):
+                        # <<< MOD
                         t = []
                         # area range index 0: all area ranges
                         # max dets index -1: typically 100 per image
+                        # >>> MOD
+                        cat_id = [cat_id]
+                        # <<< MOD
                         nm = self._coco_api.loadCats(cat_id)[0]
                         precision = precisions[:, :, idx, 0, -1]
                         precision = precision[precision > -1]

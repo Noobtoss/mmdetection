@@ -14,19 +14,18 @@ class ClassLossWeighted(nn.Module):
         self.register_buffer("class_weights", class_weights)
         self.register_buffer("class_weights_matrix", class_weights_matrix)
 
-    def forward(self, pred_scores: torch.Tensor, target_scores: torch.Tensor, *args, **kwargs) -> torch.Tensor:
-        loss = self.loss(pred_scores, target_scores, *args, **kwargs)
+    def forward(self, pred_scores: torch.Tensor, labels: torch.Tensor, *args, **kwargs) -> torch.Tensor:
+        loss = self.loss(pred_scores, labels, *args, **kwargs)
         if self.class_weights is not None:
             self.class_weights = self.class_weights.to(device=pred_scores.device)
-            loss = loss * self.class_weights
+            # Faster R-CNN adds a background output; weight foreground classes and leave background at 1.
+            weight_per_class = self.class_weights.new_ones(loss.shape)
+            weight_per_class[..., :self.class_weights.size(-1)] = self.class_weights.reshape(-1)
+            loss = loss * weight_per_class
         if self.class_weights_matrix is not None:
             self.class_weights_matrix = self.class_weights_matrix.to(device=pred_scores.device)
-            labels = target_scores.argmax(dim=-1)
-            weight_per_sample = self.class_weights_matrix[labels]
-            weight_per_sample = torch.where(
-                target_scores.any(dim=-1, keepdim=True),
-                weight_per_sample,
-                torch.ones_like(weight_per_sample),
-            )
+            valid = (labels >= 0) & (labels < self.class_weights_matrix.size(0))
+            weight_per_sample = self.class_weights_matrix.new_ones(loss.shape)
+            weight_per_sample[valid, :self.class_weights_matrix.size(-1)] = self.class_weights_matrix[labels[valid]]
             loss = loss * weight_per_sample
         return loss

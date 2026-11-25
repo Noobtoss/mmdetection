@@ -2,6 +2,7 @@ from collections import deque
 from typing import Optional
 
 import torch
+from mmdet.models.losses.utils import weight_reduce_loss
 from mmdet.registry import MODELS
 from mmdet.utils import ConfigType
 from mmengine.config import ConfigDict
@@ -14,15 +15,55 @@ from .cls_feat_proj_head import ClsFeatProjHead
 
 @MODELS.register_module()
 class ClassLossWeighted(_ClassLossWeighted):
+    """
+    Acceptable issue: Custom callers passing one-hot targets are unsupported; current heads pass integer labels.
+    Acceptable issue: avg_non_ignore=True with mean reduction and no avg_factor uses the wrong denominator; current heads supply avg_factor.
+    """
     def __init__(self,
                  loss: ConfigType = dict(type='CrossEntropyLoss', use_sigmoid=False),
                  class_weights: Optional[str] = None,
                  *args, **kwargs,
                  ) -> None:
         if isinstance(loss, (dict, ConfigDict)):
-            loss = MODELS.build(loss)
+            if kwargs.get('bg_cls_weight') is None:
+                kwargs.pop('bg_cls_weight', None)
+            loss = MODELS.build(dict(loss, **kwargs))
+        self.reduction = loss.reduction
         loss.reduction = "none"  # class weighting requires unreduced intermediate values
         super().__init__(loss=loss, **_class_weights[class_weights])
+
+    @property
+    def use_sigmoid(self):
+        return self.loss.use_sigmoid
+
+    @property
+    def custom_cls_channels(self):
+        # Faster R-CNN uses this flag to request both channel count and prediction activation.
+        return self.use_sigmoid
+
+    def get_cls_channels(self, num_classes):
+        # Required by that flag; keep Faster R-CNN's extra background output.
+        return num_classes + 1
+
+    def get_activation(self, cls_score):
+        # Match the training loss; Faster R-CNN otherwise defaults to softmax prediction.
+        if self.use_sigmoid:
+            return cls_score.sigmoid()
+        return cls_score.softmax(dim=-1)
+
+    def forward(self,
+                cls_score: torch.Tensor,
+                label: torch.Tensor,
+                weight=None,
+                avg_factor=None,
+                reduction_override=None,
+                ignore_index=None,
+                **kwargs) -> torch.Tensor:
+        reduction = reduction_override or self.reduction
+        if ignore_index is not None:
+            kwargs["ignore_index"] = ignore_index
+        loss = super().forward(cls_score, label, weight, **kwargs)
+        return weight_reduce_loss(loss, reduction=reduction, avg_factor=avg_factor)
 
 @MODELS.register_module()
 class ClsFeatLoss(_ClsFeatLoss):

@@ -17,7 +17,11 @@ model = dict(
                 _delete_=True,
                 type='ClassLossWeighted',
                 class_weights=class_weights,
-                loss=dict(type='CrossEntropyLoss', use_sigmoid=class_weights is not None, loss_weight=1.0)
+                loss=dict(
+                    type='CrossEntropyLoss',
+                    use_sigmoid=class_weights is not None,
+                    loss_weight=1.0
+                )
             ),
             cls_feat_loss = None if cls_feat_loss is None else dict(
                 type='ClsFeatLoss', # 'ClsFeatLoss',

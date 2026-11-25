@@ -15,11 +15,20 @@ ann_file_test = os.path.join(data_dir, '{{$MMDET_ANN_FILE_TEST:}}')
 backend_args = None
 
 # Read classes before building dataloaders so all splits use the annotation metadata.
+categories = {}
+for ann_file in dict.fromkeys((ann_file_train, ann_file_val, ann_file_test)):
+    for category in json.loads(pathlib.Path(ann_file).read_text())['categories']:
+        cat_id, name = category['id'], category['name']
+        assert cat_id not in categories or categories[cat_id] == name, f'Conflicting names for category ID {cat_id}'
+        categories[cat_id] = name
+categories = [dict(id=cat_id, name=name) for cat_id, name in categories.items()]
+
 metainfo = dict(
     classes=tuple(
         category['name']
-        for category in json.loads(pathlib.Path(ann_file_train).read_text())['categories']
-    )
+        for category in categories
+    ),
+    categories=categories,
 )
 num_classes = len(metainfo['classes'])
 if not num_classes:
