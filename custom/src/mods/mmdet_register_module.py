@@ -28,6 +28,8 @@ class ClassLossWeighted(_ClassLossWeighted):
             if kwargs.get('bg_cls_weight') is None:
                 kwargs.pop('bg_cls_weight', None)
             loss = MODELS.build(dict(loss, **kwargs))
+        if class_weights is not None and not loss.use_sigmoid:
+            raise ValueError('Class weighting requires use_sigmoid=True.')
         self.reduction = loss.reduction
         loss.reduction = "none"  # class weighting requires unreduced intermediate values
         super().__init__(loss=loss, **_class_weights[class_weights])
