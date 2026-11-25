@@ -6,7 +6,6 @@
     "data_dir": "../../data_hub/datasets",
     "train_ann": "experiments/07Demo/annotation_train.json",
     "val_ann": "experiments/07Demo/annotation_test.json",
-    "imgsz": 1280,
     "epochs": 50
   },
   "07DemoSuperCat": {
@@ -16,7 +15,6 @@
     "data_dir": "../../data_hub/datasets",
     "train_ann": "experiments/07DemoSuperCat/annotation_train.json",
     "val_ann": "experiments/07DemoSuperCat/annotation_test.json",
-    "imgsz": 1280,
     "epochs": 50
   },
   "07Demo_detr": {
@@ -26,7 +24,6 @@
     "data_dir": "../../data_hub/datasets",
     "train_ann": "experiments/07Demo/annotation_train.json",
     "val_ann": "experiments/07Demo/annotation_test.json",
-    "imgsz": 1280,
     "epochs": 50
   },
   "07DemoSuperCat_detr": {
@@ -36,7 +33,6 @@
     "data_dir": "../../data_hub/datasets",
     "train_ann": "experiments/07DemoSuperCat/annotation_train.json",
     "val_ann": "experiments/07DemoSuperCat/annotation_test.json",
-    "imgsz": 1280,
     "epochs": 50
   },
     "07Demo_defdetr": {
@@ -46,7 +42,6 @@
     "data_dir": "../../data_hub/datasets",
     "train_ann": "experiments/07Demo/annotation_train.json",
     "val_ann": "experiments/07Demo/annotation_test.json",
-    "imgsz": 1280,
     "epochs": 50
   },
   "07DemoSuperCat_defdetr": {
@@ -56,7 +51,6 @@
     "data_dir": "../../data_hub/datasets",
     "train_ann": "experiments/07DemoSuperCat/annotation_train.json",
     "val_ann": "experiments/07DemoSuperCat/annotation_test.json",
-    "imgsz": 1280,
     "epochs": 50
   },
     "07Demo_dino": {
@@ -66,7 +60,6 @@
     "data_dir": "../../data_hub/datasets",
     "train_ann": "experiments/07Demo/annotation_train.json",
     "val_ann": "experiments/07Demo/annotation_test.json",
-    "imgsz": 1280,
     "epochs": 50
   },
   "07DemoSuperCat_dino": {
@@ -76,7 +69,6 @@
     "data_dir": "../../data_hub/datasets",
     "train_ann": "experiments/07DemoSuperCat/annotation_train.json",
     "val_ann": "experiments/07DemoSuperCat/annotation_test.json",
-    "imgsz": 1280,
     "epochs": 50
   }
 }

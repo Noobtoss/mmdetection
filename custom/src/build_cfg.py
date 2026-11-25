@@ -16,7 +16,6 @@ def tag(cfg):
     cfg.run_name = cfg.run_name  # Matches W&B since opts does not override run_name.
     cfg.model_name = Path(cfg.model_cfg).stem
     cfg.dataset_name = Path(cfg.data_cfg).stem
-    cfg.imgsz = getattr(cfg, 'imgsz', next((step.get('scale') for step in cfg.test_dataloader.dataset.pipeline if step.get('type') == 'Resize'), None))
     cfg.epochs = cfg.max_epochs
 
 
