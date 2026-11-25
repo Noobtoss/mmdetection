@@ -1,94 +1,82 @@
 {
-  "04": {
+  "07Demo": {
     "model_cfg": "custom/configs/models/faster-rcnn_r50_fpn.py",
-    "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
-    "data_dir": "../../data_hub/datasets",
-    "train_ann": "experiments/04/annotation_train.json",
-    "val_ann": "experiments/04/annotation_val.json",
-    "test_ann": "experiments/04/annotation_test.json",
-    "epochs": 20
-  },
-  "04_scl_02_head_m": {
-    "model_cfg": "custom/configs/models/faster-rcnn_r50_fpn_cls_feat.py",
     "data_cfg": "custom/configs/datasets/base.py",
-    "ckpt": "checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
     "data_dir": "../../data_hub/datasets",
-    "train_ann": "experiments/04/annotation_train.json",
-    "val_ann": "experiments/04/annotation_val.json",
-    "test_ann": "experiments/04/annotation_test.json",
-    "cls_feat": 0.2,
-    "cls_feat_loss": "sup_con_loss",
-    "cls_feat_proj_head": "m",
-    "epochs": 20
+    "train_ann": "experiments/07Demo/annotation_train.json",
+    "val_ann": "experiments/07Demo/annotation_test.json",
+    "imgsz": 1280,
+    "epochs": 50
   },
-  "04_detr": {
+  "07DemoSuperCat": {
+    "model_cfg": "custom/configs/models/faster-rcnn_r50_fpn.py",
+    "ckpt": "checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
+    "data_cfg": "custom/configs/datasets/base.py",
+    "data_dir": "../../data_hub/datasets",
+    "train_ann": "experiments/07DemoSuperCat/annotation_train.json",
+    "val_ann": "experiments/07DemoSuperCat/annotation_test.json",
+    "imgsz": 1280,
+    "epochs": 50
+  },
+  "07Demo_detr": {
     "model_cfg": "custom/configs/models/detr_r50.py",
-    "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
-    "data_dir": "../../data_hub/datasets",
-    "train_ann": "experiments/04/annotation_train.json",
-    "val_ann": "experiments/04/annotation_val.json",
-    "test_ann": "experiments/04/annotation_test.json",
-    "epochs": 20
-  },
-  "04_detr_scl_02_head_m": {
-    "model_cfg": "custom/configs/models/detr_r50_cls_feat.py",
     "data_cfg": "custom/configs/datasets/base.py",
-    "ckpt": "checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
     "data_dir": "../../data_hub/datasets",
-    "train_ann": "experiments/04/annotation_train.json",
-    "val_ann": "experiments/04/annotation_val.json",
-    "test_ann": "experiments/04/annotation_test.json",
-    "cls_feat": 0.2,
-    "cls_feat_loss": "sup_con_loss",
-    "cls_feat_proj_head": "m",
-    "epochs": 20
+    "train_ann": "experiments/07Demo/annotation_train.json",
+    "val_ann": "experiments/07Demo/annotation_test.json",
+    "imgsz": 1280,
+    "epochs": 50
   },
-  "04_defdetr": {
+  "07DemoSuperCat_detr": {
+    "model_cfg": "custom/configs/models/detr_r50.py",
+    "ckpt": "checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
+    "data_cfg": "custom/configs/datasets/base.py",
+    "data_dir": "../../data_hub/datasets",
+    "train_ann": "experiments/07DemoSuperCat/annotation_train.json",
+    "val_ann": "experiments/07DemoSuperCat/annotation_test.json",
+    "imgsz": 1280,
+    "epochs": 50
+  },
+    "07Demo_defdetr": {
     "model_cfg": "custom/configs/models/deformable-detr-refine-twostage_r50.py",
-    "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth",
-    "data_dir": "../../data_hub/datasets",
-    "train_ann": "experiments/04/annotation_train.json",
-    "val_ann": "experiments/04/annotation_val.json",
-    "test_ann": "experiments/04/annotation_test.json",
-    "epochs": 20
-  },
-  "04_defdetr_scl_02_head_m": {
-    "model_cfg": "custom/configs/models/deformable-detr-refine-twostage_r50_cls_feat.py",
     "data_cfg": "custom/configs/datasets/base.py",
-    "ckpt": "checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth",
     "data_dir": "../../data_hub/datasets",
-    "train_ann": "experiments/04/annotation_train.json",
-    "val_ann": "experiments/04/annotation_val.json",
-    "test_ann": "experiments/04/annotation_test.json",
-    "cls_feat": 0.2,
-    "cls_feat_loss": "sup_con_loss",
-    "cls_feat_proj_head": "m",
-    "epochs": 20
+    "train_ann": "experiments/07Demo/annotation_train.json",
+    "val_ann": "experiments/07Demo/annotation_test.json",
+    "imgsz": 1280,
+    "epochs": 50
   },
-  "04_dino": {
+  "07DemoSuperCat_defdetr": {
+    "model_cfg": "custom/configs/models/deformable-detr-refine-twostage_r50.py",
+    "ckpt": "checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth",
+    "data_cfg": "custom/configs/datasets/base.py",
+    "data_dir": "../../data_hub/datasets",
+    "train_ann": "experiments/07DemoSuperCat/annotation_train.json",
+    "val_ann": "experiments/07DemoSuperCat/annotation_test.json",
+    "imgsz": 1280,
+    "epochs": 50
+  },
+    "07Demo_dino": {
     "model_cfg": "custom/configs/models/dino-5scale_swin-l.py",
-    "data_cfg": "custom/configs/datasets/base.py",
     "ckpt": "checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth",
+    "data_cfg": "custom/configs/datasets/base.py",
     "data_dir": "../../data_hub/datasets",
-    "train_ann": "experiments/04/annotation_train.json",
-    "val_ann": "experiments/04/annotation_val.json",
-    "test_ann": "experiments/04/annotation_test.json",
-    "epochs": 20
+    "train_ann": "experiments/07Demo/annotation_train.json",
+    "val_ann": "experiments/07Demo/annotation_test.json",
+    "imgsz": 1280,
+    "epochs": 50
   },
-  "04_scl_02_head_m_dino": {
-    "model_cfg": "custom/configs/models/dino-5scale_swin-l_cls_feat.py",
-    "data_cfg": "custom/configs/datasets/base.py",
+  "07DemoSuperCat_dino": {
+    "model_cfg": "custom/configs/models/dino-5scale_swin-l.py",
     "ckpt": "checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth",
+    "data_cfg": "custom/configs/datasets/base.py",
     "data_dir": "../../data_hub/datasets",
-    "train_ann": "experiments/04/annotation_train.json",
-    "val_ann": "experiments/04/annotation_val.json",
-    "test_ann": "experiments/04/annotation_test.json",
-    "cls_feat": 0.2,
-    "cls_feat_loss": "sup_con_loss",
-    "cls_feat_proj_head": "m",
-    "epochs": 20
+    "train_ann": "experiments/07DemoSuperCat/annotation_train.json",
+    "val_ann": "experiments/07DemoSuperCat/annotation_test.json",
+    "imgsz": 1280,
+    "epochs": 50
   }
 }
