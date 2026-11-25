@@ -2,7 +2,7 @@
 #SBATCH --job-name=mmdetection # Kurzname des Jobs
 #SBATCH --array=1-8%4
 #SBATCH --output=logs/%A_%a.out
-#SBATCH --partition=p6             # p4
+#SBATCH --partition=p2,p4,p6             # p4
 #SBATCH --qos=gpuultimate
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1                  # Anzahl Knoten
