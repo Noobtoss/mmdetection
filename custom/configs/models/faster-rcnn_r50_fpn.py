@@ -30,7 +30,7 @@ param_scheduler = [
 # build_cfg sets this before loading; head outputs must match the dataset classes.
 num_classes = int('{{$MMDET_NUM_CLASSES:37}}')
 # load_from = '/nfs/scratch/staff/schmittth/code_hub/mmdetection/checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth'
-load_from = '../../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth'
+load_from = '{{fileDirname}}/../../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth'
 
 model = dict(
     roi_head=dict(

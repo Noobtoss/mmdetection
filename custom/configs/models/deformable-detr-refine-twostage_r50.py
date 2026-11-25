@@ -23,7 +23,7 @@ param_scheduler = [
 # build_cfg sets this before loading; head outputs must match the dataset classes.
 num_classes = int('{{$MMDET_NUM_CLASSES:37}}')
 # load_from = '/nfs/scratch/staff/schmittth/code_hub/mmdetection/checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth'
-load_from = '../../../checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth'
+load_from = '{{fileDirname}}/../../../checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth'
 
 model = dict(
     bbox_head=dict(

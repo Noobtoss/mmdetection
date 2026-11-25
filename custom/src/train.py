@@ -19,7 +19,6 @@ DEFAULT_ARGS = {
         val_ann="annotation_test.json",
         test_ann="annotation_test.json",
         opts=["seed", "184181",
-              "load_from", "../../checkpoints/faster_rcnn_r50_fpn_mstrain_3x_coco_20210524_110822-e10bd31c.pth",
               "wandb_project", "runs-mmdetection",
               "cls_feat", None,
               "class_weights", "class_sim_matrix",
@@ -35,10 +34,7 @@ DEFAULT_ARGS = {
         train_ann="annotation_train.json",
         val_ann="annotation_test.json",
         test_ann="annotation_test.json",
-        opts=["seed", "184181",
-              "load_from", "../../checkpoints/detr_r50_8xb2-150e_coco_20221023_153551-436d03e8.pth",
-              "wandb_project", "runs-mmdetection",
-              ]
+        opts=["seed", "184181"]
     ),
     "def-detr": Namespace(
         run_name="unnamed_run",
@@ -50,10 +46,7 @@ DEFAULT_ARGS = {
         train_ann="annotation_train.json",
         val_ann="annotation_test.json",
         test_ann="annotation_test.json",
-        opts=["seed", "184181",
-              "load_from", "../../checkpoints/deformable-detr-refine-twostage_r50_16xb2-50e_coco_20221021_184714-acc8a5ff.pth",
-              "wandb_project", "runs-mmdetection",
-              ]
+        opts=["seed", "184181"]
     ),
     "dino": Namespace(
         run_name="unnamed_run",
@@ -65,10 +58,7 @@ DEFAULT_ARGS = {
         train_ann="annotation_train.json",
         val_ann="annotation_test.json",
         test_ann="annotation_test.json",
-        opts=["seed", "184181",
-              "load_from", "../../checkpoints/dino-5scale_swin-l_8xb2-36e_coco-5486e051.pth",
-              "wandb_project", "runs-mmdetection",
-              ]
+        opts=["seed", "184181"]
     ),
 }
 
