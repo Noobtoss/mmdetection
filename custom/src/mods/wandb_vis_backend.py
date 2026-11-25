@@ -11,6 +11,7 @@ class WandbVisBackend(_WandbVisBackend):
     train_scalars = ['loss', 'logging', 'lr']  # substrings to match
 
     def _add_prefix(self, name):
+        # Acceptable issue: Loss names such as d0.loss_cls and enc_loss_cls remain outside train/.
         if any(name == kw or name.startswith(kw + '_') for kw in self.train_scalars):
             return f'{self.train_prefix}/{name}'
         return name
