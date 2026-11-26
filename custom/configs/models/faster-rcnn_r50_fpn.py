@@ -12,7 +12,11 @@ train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
 
-# learning rate
+# Scale LR to the total batch size to reduce instability with smaller batches.
+auto_scale_lr = dict(enable=True)
+# Clip large gradients to reduce the risk of unstable updates and NaN losses.
+optim_wrapper = dict(clip_grad=dict(max_norm=35, norm_type=2))
+
 param_scheduler = [
     dict(
         type='LinearLR', start_factor=0.001, by_epoch=False, begin=0, end=500),

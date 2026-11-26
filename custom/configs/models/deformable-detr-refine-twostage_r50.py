@@ -8,6 +8,9 @@ train_cfg = dict(
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
 
+# Scale LR to the total batch size to reduce instability with smaller batches.
+auto_scale_lr = dict(enable=True)
+
 param_scheduler = [
     dict(
         type='MultiStepLR',
