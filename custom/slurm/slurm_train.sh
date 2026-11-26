@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=mmdetection # Kurzname des Jobs
-#SBATCH --array=1-8%4
+#SBATCH --array=1-8%3
 #SBATCH --output=logs/%A_%a.out
 #SBATCH --partition=p2,p4,p6             # p4
 #SBATCH --qos=gpuultimate
@@ -73,7 +73,6 @@ fi
 
 # ----- WANDB -------------------------------------------------------
 # export WANDB_API_KEY=95177947f5f36556806da90ea7a0bf93ed857d58
-export WANDB_API_KEY=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
 export WANDB_CACHE_DIR=$TMPDIR
 export WANDB_DATA_DIR=$TMPDIR
 export WANDB_DIR=$TMPDIR
