@@ -33,6 +33,7 @@ metainfo = dict(
 num_classes = len(metainfo['classes'])
 if not num_classes:
     raise ValueError(f'No classes found in {ann_file_train}')
+del category
 
 train_dataloader = dict(
     dataset=dict(
